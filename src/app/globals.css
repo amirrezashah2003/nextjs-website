@@ -1,26 +1,218 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root{
+  --color-bg-primary: #0d0b12;
+  --color-bg-secondary: #17131f;
+  --color-bg-tertiary: black;
+  
+  --color-text: #f4f0f8;
+  --color-text-hover: white;
+  
+  --color-primary: #ba00d2da;
+  --color-primary-hover: #e101ff;
+  
+  --color-secondary: #a8a0b5;
+  
+  --shadow-primary: 0 8px 30px rgba(139, 92, 246, 0.18);
+  --shadow-secondary: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+.light {
+  --color-bg-primary: #f8f7fa;
+  --color-bg-secondary: #efedf3;
+  --color-bg-tertiary: white;
+
+  --color-text: #1c1822;
+  --color-text-hover: black;
+  
+  --color-primary: #ba00d2da;
+  --color-primary-hover: #e101ff;
+  
+  --color-secondary: #6b6475;
+
+  --shadow-primary: 0 8px 30px rgba(139, 92, 246, 0.14);
+  --shadow-secondary: 0 8px 30px rgba(28, 24, 34, 0.08);
+}
+@theme{
+  /* تغییر دادن بریک پوینت های پیش فرض تیلویند */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1400px;
+
+  /* تعریف کردن رنگ ها در تیلویند */
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-tertiary: var(--color-bg-tertiary);
+  
+  --color-text: var(--color-text);
+  --color-text-hover: var(--color-text-hover);
+  
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  
+  --color-secondary: var(--color-secondary);
+  
+  --shadow-primary: var(--shadow-primary);
+  --shadow-secondary: var(--shadow-secondary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+/* تغییر دادن کلاس کانتینر در تیلویند */
+@utility container {
+  margin-inline: auto !important;     /* وسط‌چین */
+  padding-inline: 0.75rem !important; /* مشابه پدینگ گاتر در بوت‌استرپ (حدود 12px) */
+  width: 100% !important;             /* در حالت موبایل (زیر 576) تمام عرض */
+
+  /* اعمال max-width در هر بریک‌پوینت */
+  @media (width >= 576px) { max-width: 540px; }
+  @media (width >= 768px) { max-width: 720px; }
+  @media (width >= 992px) { max-width: 960px; }
+  @media (width >= 1200px) { max-width: 1140px; }
+  @media (width >= 1400px) { max-width: 1320px; }
+}
+/* تعریف کردن رنگ های تم لایت مد */
+
+
+
+@font-face {
+  font-family: 'Vazirmatn'; /* اسم دلخواه برای فونت */
+  src: url('/fonst/Vazirmatn-Regular.ttf') format('truetype'); /* مسیر فایل اصلی */
+  font-weight: 400; /* یا normal */
+  font-style: normal;
+  font-display: swap; /* برای بهینه‌سازی لود شدن فونت */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-Thin.ttf') format('truetype');
+  font-weight: 100; /* Thin */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-ExtraLight.ttf') format('truetype');
+  font-weight: 200; /* ExtraLight */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-Light.ttf') format('truetype');
+  font-weight: 300; /* Light */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-Medium.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-SemiBold.ttf') format('truetype');
+  font-weight: 600; /* SemiBold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-ExtraBold.ttf') format('truetype');
+  font-weight: 800; /* ExtraBold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonst/Vazirmatn-Black.ttf') format('truetype');
+  font-weight: 900; /* Black */
+  font-style: normal;
+  font-display: swap;
+}
+
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  font-family: "Vazirmatn", Arial, sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text);
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+
+
+
+
+
+
+
+
+/* برای کاستوم کردن دکمه های کروسل پکیج اسوایپر */
+.swiper-button-next,
+.swiper-button-prev {
+    /* تغییر رنگ دکمه */
+    color: var(--color-primary) !important; /* رنگ مورد نظر تو (مثلاً قرمز) */
+    
+    /* تغییر اندازه دکمه */
+    --swiper-navigation-size: 30px; /* اندازه دلخواه (پیش‌فرض ۴۴ پیکسل است) */
+    
+    /* اختیاری: اگر می‌خواهی پس‌زمینه هم داشته باشند */
+    /* background: white; 
+    padding: 10px;
+    border-radius: 50%; */
+}
+
+
+
+::selection{
+  background-color: var(--color-primary);
+  color: white;
 }

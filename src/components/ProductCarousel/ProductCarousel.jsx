@@ -1,0 +1,64 @@
+'use client';
+
+// ایمپورت کامپوننت‌های اصلی
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// ایمپورت ماژول‌های مورد نیاز (مثلاً دکمه و نقطه‌های پایین)
+import { Navigation } from 'swiper/modules';
+import Image from 'next/image';
+
+// ایمپورت استایل‌های سوایپر
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+import { useProducts } from '../hooks/useProducts';
+
+
+
+export default function ProductCarousel({ category , title }) {
+    const { data, isLoading , isError } = useProducts(category);
+    const products = typeof data === "string" ? JSON.parse(data) : data
+
+
+    if (isLoading) return <div>در حال بارگذاری محصولات {title}...</div>;
+    if (isError) return <div>خطا در دریافت اطلاعات!</div>;
+
+    return (
+        <div className="py-8">
+            <h2 className="text-2xl font-bold mb-6">{title}</h2>
+            
+            <Swiper
+                modules={[Navigation]}
+                navigation
+                spaceBetween={20}
+                slidesPerView={2} // حالت موبایل
+                breakpoints={{
+                768: { slidesPerView: 3 }, // تبلت
+                1024: { slidesPerView: 4 }, // دسکتاپ
+                }}
+            >
+                {products.map( product => (
+                    <SwiperSlide key={product.id}>
+                        <div className="h-80 border flex flex-col justify-between rounded-lg p-4 bg-bg-secondary shadow-sm shadow-gray-300">
+                            <div className='relative w-full h-40 md:h-50 overflow-hidden rounded-md'>
+                                <Image 
+                                    src={product.img} 
+                                    alt={product.name} 
+                                    fill 
+                                    className="object-contain"
+                                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                />
+                            </div>
+                            <div>
+                                <h3 className="mt-4 font-bold">{product.name}</h3>
+                                <p className="text-primary">
+                                    {new Intl.NumberFormat('fa-IR').format(product.price)} تومان
+                                </p>
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </div>
+    );
+}
