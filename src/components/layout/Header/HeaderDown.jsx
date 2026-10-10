@@ -12,8 +12,7 @@ import Offcanvas from "./Offcanvas.jsx";
 import MegaMenu from "./MegaMenu.jsx";
 import { useState } from "react";
 
-
-import Link from "next/link.js";
+import { useRouter } from 'next/navigation';
 
 
 
@@ -32,31 +31,32 @@ const menuData = {
   ],
 
   "لپتاپ": [
-    { label: "ایسوس" }, 
-    { label: "لنوو" }, 
-    { label: "مک" }, 
-    { label: "اچ پی" }, 
-    { label: "ام اس آی" }
+    { label: "ایسوس" , name: "asus" }, 
+    { label: "لنوو" , name: "lenovo" }, 
+    { label: "مک" , name: "apple" }, 
+    { label: "اچ پی" , name: "hp" }, 
+    { label: "ام اس آی"  , name: "msi"}
   ],
-  "ایسوس": [{ label: "asus ROG" }, { label: "asus TUF" }, { label: "asus zenbook" }],
-  "لنوو": [{ label: "Legion" }, { label: "LOQ" }, { label: "ideapad" }],
-  "مک": [{ label: "air" }, { label: "pro" }],
+  "ایسوس": [{ label: "asus ROG" , name: "rog" }, { label: "asus TUF", name: "tuf" }, { label: "asus zenbook", name: "zenbook"}],
+  "لنوو": [{ label: "Legion" , name: "legion" }, { label: "LOQ" , name: "loq" }, { label: "ideapad" , name: "ideapad" }],
+  "مک": [{ label: "air" , name: "macbookair" }, { label: "pro" , name: "macbookpro"}],
 
 
 
   "موبایل": [
-    { label: "آیفون" }, 
-    { label: "سامسونگ" }, 
-    { label: "شیائومی" }
+    { label: "آیفون" , name: "apple" }, 
+    { label: "سامسونگ", name: "samsung" }, 
+    { label: "شیائومی", name: "xiaomi" }
   ],
-  "آیفون": [{ label: "iphone 17" }, { label: "iphone 16" }],
-  "سامسونگ": [{ label: "a 56" }, { label: "a 36" }],
-  "شیائومی": [{ label: "poco x7" }, { label: "redmi note 14" }],
+  "آیفون": [{ label: "iphone 17" , name: "iphone17" }, { label: "iphone 16", name: "iphone16"}],
+  "سامسونگ": [{ label: "a 56", name: "a56" }, { label: "a 36" , name: "a36" }],
+  "شیائومی": [{ label: "poco x7" , name: "poco" }, { label: "redmi note 14" , name: "redmi" }],
 
 
-  "تبلت": [{ label: "آیپد" }, { label: "تبلت سامسونگ" }],
-  "کنسول": [{ label: "PS5" }, { label: "Xbox" }]
+  "تبلت": [{ label: "آیپد" , name: "apple" }, { label: "تبلت سامسونگ" , name: "samsung" }],
+  "کنسول": [{ label: "PS5" , name: "sony" }, { label: "Xbox" ,name: "microsoft" }]
 };
+console.log(menuData["main"][0].name)
 
 
 
@@ -67,6 +67,7 @@ const menuData = {
 
 
 export default function HeaderDown(){
+    const router = useRouter();
     // موبایل
     // این استیت برای باز و بسته شدن آفکنوسه
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,9 +89,17 @@ export default function HeaderDown(){
     };
 
 
+   
 
 
 
+
+    // پیدا کردن روت درست در منو آفکنوس موبایل
+    const activeCategory = menuData["main"].find(item => item.label === history[1]);
+    let activeBrand = null
+    if(activeCategory) { activeBrand = menuData[history[1]].find(item => item.label === history[2])}
+    let activeModel = null
+    if(activeCategory && activeBrand) { activeModel = menuData[history[2]].find(item => item.label === history[3])}
 
 
 
@@ -119,8 +128,21 @@ export default function HeaderDown(){
                                 </div>
                             )}
 
-                            {history.length >= 2 && (
-                                <div className="mb-5 cursor-pointer inline-block border border-primary rounded-[7px] px-2 py-0.5">نمایش تمامی محصولات</div>
+                            {history.length === 2 && activeCategory  && (
+                                <a 
+                                    href={`/products/${activeCategory.name}`} 
+                                    className="mb-5 cursor-pointer inline-block border border-primary rounded-[7px] px-2 py-0.5"
+                                >
+                                    نمایش تمامی محصولات
+                                </a>
+                            )}
+                            {history.length === 3 && activeBrand  && (
+                                <a 
+                                    href={`/products/${activeCategory.name}/${activeBrand.name}`} 
+                                    className="mb-5 cursor-pointer inline-block border border-primary rounded-[7px] px-2 py-0.5"
+                                >
+                                    نمایش تمامی محصولات
+                                </a>
                             )}
 
                                 <ul>
@@ -138,6 +160,18 @@ export default function HeaderDown(){
                                                     // اگر زیرمنو دارد، برو به اون سطح، وگرنه کار خاصی نکن (یا لینک بده)
                                                     if (hasSubMenu) {
                                                         goForward(item.label);
+                                                    }
+                                                    else{
+                                                        if(history.length === 2){
+                                                            const finalUrl = `/products/${activeCategory.name}/${item.name}`; 
+                                                            router.push(finalUrl);
+                                                            setIsMenuOpen(false);
+                                                        }
+                                                        if(history.length === 3){
+                                                            const finalUrl = `/products/${activeCategory.name}/${activeBrand.name}/${item.name}`; 
+                                                            router.push(finalUrl);
+                                                            setIsMenuOpen(false);
+                                                        }
                                                     }
                                                 }}
                                             >
@@ -205,11 +239,13 @@ export default function HeaderDown(){
                                                         {menuData[item.label].map((item2 , index2) => (
                                                             <li key={index2} className="flex justify-between items-center px-4 group/sub">
                                                                 <div className={`cursor-pointer flex items-center justify-between w-full px-1 py-3 border-b border-dotted rounded-[7px] group-hover/sub:bg-primary group-hover/sub:text-white transition-colors duration-200`}>
-                                                                    <span className="flex items-center">
-                                                                        {item2.icon && item2.icon}
-                                                                        {item2.label}
-                                                                    </span>
-                                                                    {menuData.hasOwnProperty(item2.label) && <IoIosArrowBack /> }
+                                                                    <a href={`/products/${item.name}/${item2.name}`} className="flex justify-between items-center w-full">
+                                                                        <span className="flex items-center">
+                                                                            {item2.icon && item2.icon}
+                                                                            {item2.label}
+                                                                        </span>
+                                                                        {menuData.hasOwnProperty(item2.label) && <IoIosArrowBack /> }
+                                                                    </a>
                                                                 </div>
 
                                                                 {menuData.hasOwnProperty(item2.label) && (
@@ -218,11 +254,13 @@ export default function HeaderDown(){
                                                                             {menuData[item2.label].map((item3, index3) => (
                                                                             <li key={index3} className="px-4 list-none">
                                                                                 <div className={`cursor-pointer flex items-center justify-between w-full px-1 py-3 border-b border-dotted rounded-[7px] hover:bg-primary hover:text-white transition-colors duration-200`}>
-                                                                                    <span className="flex items-center">
-                                                                                        {item3.icon && item3.icon}
-                                                                                        {item3.label}
-                                                                                    </span>
-                                                                                    {menuData.hasOwnProperty(item3.label) && <IoIosArrowBack /> }
+                                                                                    <a href={`/products/${item.name}/${item2.name}/${item3.name}`} className="flex items-center justify-between w-full">
+                                                                                        <span className="flex items-center">
+                                                                                            {item3.icon && item3.icon}
+                                                                                            {item3.label}
+                                                                                        </span>
+                                                                                        {menuData.hasOwnProperty(item3.label) && <IoIosArrowBack /> }
+                                                                                    </a>
                                                                                 </div>
                                                                             </li>
                                                                             ))}

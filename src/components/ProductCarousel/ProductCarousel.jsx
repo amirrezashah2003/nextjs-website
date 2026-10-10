@@ -24,7 +24,7 @@ export default function ProductCarousel({ category , title }) {
     if (isError) return <div>خطا در دریافت اطلاعات!</div>;
 
     return (
-        <div className="py-8">
+        <div className="p-3 my-20 bg-gray-800 in-[.light]:bg-gray-200 rounded-lg">
             <h2 className="text-2xl font-bold mb-6">{title}</h2>
             
             <Swiper
@@ -39,7 +39,7 @@ export default function ProductCarousel({ category , title }) {
             >
                 {products.map( product => (
                     <SwiperSlide key={product.id}>
-                        <div className="h-80 border flex flex-col justify-between rounded-lg p-4 bg-bg-secondary shadow-sm shadow-gray-300">
+                        <div className="h-80 border border-gray-400 in-[.light]:border-gray-700 flex flex-col justify-between rounded-lg p-4 bg-bg-secondary">
                             <div className='relative w-full h-40 md:h-50 overflow-hidden rounded-md'>
                                 <Image 
                                     src={product.img} 
