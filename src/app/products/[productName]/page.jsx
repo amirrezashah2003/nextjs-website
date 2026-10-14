@@ -25,7 +25,7 @@ export default function ProductName(){
     return(
     <main className="container mx-auto px-4 py-8">  
         <h1 className="text-2xl font-bold mb-8 text-gray-800 in-[.dark]:text-gray-200">محصولات فروشگاه</h1>
-        <h2 className="mb-2 text-center">لیست {title}</h2>
+        <h2 className="mb-5 text-center">لیست {title}</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {products.map(product => (

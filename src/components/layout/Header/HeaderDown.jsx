@@ -11,7 +11,6 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import Offcanvas from "./Offcanvas.jsx";
 import MegaMenu from "./MegaMenu.jsx";
 import { useState } from "react";
-
 import { useRouter } from 'next/navigation';
 
 

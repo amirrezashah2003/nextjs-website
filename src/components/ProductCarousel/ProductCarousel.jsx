@@ -12,6 +12,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 import { useProducts } from '../hooks/useProducts';
+import Link from 'next/link';
 
 
 
@@ -41,13 +42,15 @@ export default function ProductCarousel({ category , title }) {
                     <SwiperSlide key={product.id}>
                         <div className="h-80 border border-gray-400 in-[.light]:border-gray-700 flex flex-col justify-between rounded-lg p-4 bg-bg-secondary">
                             <div className='relative w-full h-40 md:h-50 overflow-hidden rounded-md'>
-                                <Image 
-                                    src={product.img} 
-                                    alt={product.name} 
-                                    fill 
-                                    className="object-contain"
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                />
+                                <Link href={`/product/${product.id}`}>
+                                    <Image 
+                                        src={product.img} 
+                                        alt={product.name} 
+                                        fill 
+                                        className="object-contain"
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                    />
+                                </Link>
                             </div>
                             <div>
                                 <h3 className="mt-4 font-bold">{product.name}</h3>

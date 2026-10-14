@@ -26,3 +26,10 @@ export const getProductsByCategoryAndBrandAndModel = async (category , brand , m
     const res = await http.get(url)
     return res.data
 }
+
+
+export const getProductsById = async (id) => {
+    const url = id ? `/products?id=${id}` : "/products"
+    const res = await http.get(url)
+    return res.data
+}
