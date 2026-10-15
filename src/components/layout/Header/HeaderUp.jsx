@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
 import Styles from "./HeaderUp.module.css"
 
-function HeaderUp(){
+function HeaderUp({ userPhone }){
   const [isOpen , setIsOpen] = useState(false)
   const inputRef = useRef(null)
   const magnifyRef = useRef(null)
@@ -66,9 +66,32 @@ function HeaderUp(){
             </div>
 
 
-
-            <a href="" className="border border-primary rounded-[5px] px-2 py-1">ورود</a>
-            <a href="" className="border border-primary rounded-[5px] px-2 py-1">ثبت نام</a>
+            <div>
+              {userPhone ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium border-b border-primary rounded-[5px] px-2 py-1">
+                    {userPhone}
+                  </span>
+                  <button
+                    onClick={async () => {
+                      // پاک کردن کوکی و ریفرش
+                      await fetch("/api/auth/logout", { method: "POST" });
+                      window.location.reload();
+                    }}
+                    className="border border-primary rounded-[5px] px-2 py-1"
+                  >
+                    خروج
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href="/auth"
+                  className="border border-primary rounded-[5px] px-2 py-1"
+                >
+                  ورود | ثبت‌نام
+                </a>
+              )}
+            </div>
 
             <a href="" className="flex items-center border border-primary rounded-[5px] px-2 py-1 relative">
               <span>سبد خرید</span>

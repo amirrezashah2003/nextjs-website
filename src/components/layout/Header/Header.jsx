@@ -1,10 +1,33 @@
 import HeaderUp from "./HeaderUp"
 import HeaderDown from "./HeaderDown"
-function Header(){
+
+import { cookies } from 'next/headers'
+async function Header(){
+
+  // ۱. خواندن کوکی در بخش سروری
+  const cookieStore = await cookies()
+  const tokenCookie = cookieStore.get('token')
+
+  let userPhone = null;
+
+  if (tokenCookie) {
+    try {
+      // اگر از پکیج jsonwebtoken استفاده می‌کنید:
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(
+        tokenCookie.value, 
+        process.env.JWT_SECRET || 'super-secret-key'
+      );
+      userPhone = decoded.phone;
+    } catch (err) {
+      userPhone = null;
+    }
+  }
+
     return(
     <header>
-    <HeaderUp />
-    <HeaderDown />
+        <HeaderUp userPhone={userPhone} />
+        <HeaderDown />
     </header>
     )
 }

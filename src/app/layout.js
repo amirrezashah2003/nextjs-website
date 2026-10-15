@@ -1,5 +1,4 @@
-import Header from "@/components/layout/Header/Header";
-import Footer from "@/components/layout/Footer/Footer";
+import MainLayout from "@/components/MainLayout";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
 import QueryProvider from "./QueryProvider";
 import "./globals.css";
@@ -24,9 +23,9 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col justify-between">
         <QueryProvider>
           <NextThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-            <Header />     
-            {children}
-            <Footer />
+            <MainLayout>
+             {children}
+            </MainLayout>     
           </NextThemeProvider>
         </QueryProvider>
       </body>
