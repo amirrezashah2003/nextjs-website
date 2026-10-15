@@ -1,6 +1,6 @@
 // app/page.tsx
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getQueryClient } from "../../lib/get-query-client";
+import { getQueryClient } from "@/lib/get-query-client";
 import ProductCarousel from "@/components/ProductCarousel/ProductCarousel";
 import { getProducts } from "@/components/api/services/productsService";
 
