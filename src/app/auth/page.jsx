@@ -1,28 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 
-export default function AuthPage() {
+function AuthContent() {
     const [step, setStep] = useState('phone'); // 'phone' یا 'otp'
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-
-    const searchParams = useSearchParams(); // ۲. تعریف searchParams
-    const callbackUrl = searchParams.get('callback') || '/'; // ۳. خواندن پارامتر callback یا پیش‌فرض خانه
-
-
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callback') || '/'; // خواندن آدرس قبلی یا پیش‌فرض خانه
 
     // تابع اعتبارسنجی شماره موبایل ایران
     const validateIranianPhone = (phoneNumber) => {
         const phoneRegex = /^09[0-9]{9}$/;
         return phoneRegex.test(phoneNumber);
     };
-
 
   // مرحله ۱: ارسال شماره موبایل
   const handleSendOtp = async (e) => {
@@ -32,7 +28,6 @@ export default function AuthPage() {
       setError('شماره تلفن معتبر نیست. (مثال: 09123456789)');
       return;
     }
-
 
     setLoading(true);
     try {
@@ -60,7 +55,6 @@ export default function AuthPage() {
       
       if (guestCart.length > 0) {
         try {
-          // استخراج userId و توکن احتمالی از خروجی لاگین جهت دور زدن تاخیر ست شدن کوکی
           const userId = response.data?.user?.id || response.data?.userId;
           const userToken = response.data?.token || response.data?.accessToken;
 
@@ -71,17 +65,16 @@ export default function AuthPage() {
               userId: userId,
               token: userToken
             },
-            { withCredentials: true } // حیاتی برای ارسال کوکی لاگین به سرور
+            { withCredentials: true }
           );
           
-          // پاک کردن سبد مهمان از لوکال‌استوریج پس از انتقال موفق
           localStorage.removeItem('guest_cart');
         } catch (syncErr) {
           console.error('Failed to sync guest cart on login:', syncErr);
         }
       }
 
-      alert(response.data.message || 'با موفقیت وارد شدید!');
+      // هدایت کاربر به صفحه قبلی (callback) یا صفحه اصلی
       window.location.href = decodeURIComponent(callbackUrl);
       
     } catch (err) {
@@ -122,9 +115,9 @@ export default function AuthPage() {
               <input
                 type="tel"
                 placeholder="09123456789"
-                className="w-full rounded-xl border border-neutral-300 p-3 outline-none focus:ring-1 focus:ring-primary-hover in-[.dark]:border-neutral-700 in-[.dark]:bg-neutral-800 in-[.dark]:text-white"
+                className="w-full rounded-xl border border-neutral-300 p-3 outline-none focus:ring-1 focus:ring-primary in-[.dark]:border-neutral-700 in-[.dark]:bg-neutral-800 in-[.dark]:text-white"
                 value={phone}
-                onChange={(e) => { setPhone(e.target.value);  if (error) setError('');} }
+                onChange={(e) => { setPhone(e.target.value); if (error) setError(''); }}
                 required
               />
             </div>
@@ -145,7 +138,7 @@ export default function AuthPage() {
                 type="text"
                 maxLength="4"
                 placeholder="****"
-                className="w-full rounded-xl border border-neutral-300 p-3 text-center text-2xl tracking-[1em] outline-none focus:ring-1 focus:ring-primary-hover in-[.dark]:border-neutral-700 in-[.dark]:bg-neutral-800 in-[.dark]:text-white"
+                className="w-full rounded-xl border border-neutral-300 p-3 text-center text-2xl tracking-[1em] outline-none focus:ring-1 focus:ring-primary in-[.dark]:border-neutral-700 in-[.dark]:bg-neutral-800 in-[.dark]:text-white"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 required
@@ -169,5 +162,13 @@ export default function AuthPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[80vh] items-center justify-center">در حال بارگذاری...</div>}>
+      <AuthContent />
+    </Suspense>
   );
 }

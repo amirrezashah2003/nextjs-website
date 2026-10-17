@@ -8,33 +8,32 @@ datasource db {
 }
 
 model Product {
-  id       Int    @id @default(autoincrement()) // یا اگر id ها عددیِ دستی یا استرینگ هستند می‌تونه String بشه
+  id       Int    @id @default(autoincrement())
   category String
   brand    String
   model    String
   name     String
-  price    BigInt // چون قیمت‌ها بزرگ هستند (مثل ۶۵۹ میلیون تومان) از BigInt استفاده می‌کنیم
+  price    BigInt 
   info     String
   img      String
 
-  cartItems CartItem[] // رابطه با آیتم‌های سبد خرید
+  cartItems CartItem[]
+  orderItems OrderItem[]
 }
-
-
 
 model User {
   id        Int      @id @default(autoincrement())
   phone     String   @unique
-  name      String?  // نام کاربر (اختیاری در زمان ثبت‌نام اولیه)
+  name      String?  
+  email     String?  // جدید: برای پروفایل و فاکتور
+  nationalId String? // جدید: کد ملی برای خریدهای اینترنتی
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart Cart? // هر کاربر حداکثر یک سبد خرید فعال دارد
+  cart      Cart? 
+  orders    Order[]  // رابطه با سفارش‌ها
+  addresses Address[] // رابطه با آدرس‌های کاربر
 }
-
-
-
-
 
 model Otp {
   id        Int      @id @default(autoincrement())
@@ -44,19 +43,11 @@ model Otp {
   createdAt DateTime @default(now())
 }
 
-
-
-
-
-
-
-
-
 // ==================== مدل‌های سبد خرید ====================
 
 model Cart {
   id        Int        @id @default(autoincrement())
-  userId    Int?       @unique // اگر کاربر لاگین کرده باشد؛ برای سبد مهمان خالی می‌ماند
+  userId    Int?       @unique 
   user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
   createdAt DateTime   @default(now())
@@ -70,9 +61,47 @@ model CartItem {
   productId Int
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int      @default(1)
-  price     BigInt   // قیمت لحظه‌ای محصول در زمانِ افزودن به سبد
+  price     BigInt   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([cartId, productId]) // هر محصول فقط یک‌بار در سبد ثبت می‌شود و quantity افزایش می‌یابد
+  @@unique([cartId, productId])
+}
+
+// ==================== مدل‌های جدید پنل کاربری (سفارش‌ها و آدرس‌ها) ====================
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalPrice  BigInt      // مبلغ کل سفارش
+  status      String      @default("PENDING") // وضعیت: PENDING (در حال بررسی), PROCESSING (آماده‌سازی), DELIVERED (تحویل داده شده), CANCELLED (لغو شده)
+  addressText String      // آدرس متنی تحویل سفارش
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     BigInt   // قیمت محصول در زمان ثبت سفارش
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String   @default("منزل") // مثلا منزل، محل کار
+  city       String   // شهر
+  street     String   // خیابان و پلاک
+  postalCode String?  // کد پستی
+  receiverName String? // نام گیرنده
+  receiverPhone String? // تلفن گیرنده
+  createdAt  DateTime @default(now())
 }

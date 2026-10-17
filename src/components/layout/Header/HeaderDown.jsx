@@ -15,6 +15,9 @@ import { useRouter } from 'next/navigation';
 
 
 
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
 
 
 
@@ -55,7 +58,7 @@ const menuData = {
   "تبلت": [{ label: "آیپد" , name: "apple" }, { label: "تبلت سامسونگ" , name: "samsung" }],
   "کنسول": [{ label: "PS5" , name: "sony" }, { label: "Xbox" ,name: "microsoft" }]
 };
-console.log(menuData["main"][0].name)
+
 
 
 
@@ -88,6 +91,23 @@ export default function HeaderDown(){
     };
 
 
+
+
+      // گرفتن اطلاعات پروفایل کاربر
+    const { data: profileData, isLoading } = useQuery({
+        queryKey: ["user-profile"],
+        queryFn: async () => {
+        try {
+            const res = await axios.get("/api/profile");
+            return res.data.user;
+        } catch {
+            return null;
+        }
+        },
+        staleTime: 1000 * 60 * 5, // کش کردن برای ۵ دقیقه جهت بهینه‌سازی
+    });
+    // تشخیص ادمین بودن (بر اساس شناسه ۱ که در پروژه استفاده کردید)
+    const isAdmin = profileData?.id === 1;
    
 
 
@@ -288,7 +308,12 @@ export default function HeaderDown(){
                     <nav>
                         <ul className="flex gap-3 items-center justify-end">
                             <li>
-                                <a href="" className="flex items-center border-b-3 border-primary rounded-[7px] py-1 px-2 hover:border-primary-hover hover:text-text-hover"> پنل کاربری</a>
+                                <a
+                                    href={isAdmin ? "/admin" : "/profile"}
+                                    className="flex items-center border-b-3 border-primary rounded-[7px] py-1 px-2 hover:border-primary-hover hover:text-text-hover"
+                                >
+                                    {isAdmin ? "پنل ادمین" : "پنل کاربری"}
+                                </a>
                             </li>
                             <li>
                                 <a href="" className="flex items-center border-b-3 border-primary rounded-[7px] py-1 px-2 hover:border-primary-hover hover:text-text-hover"> درباره من </a>

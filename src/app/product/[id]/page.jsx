@@ -171,7 +171,7 @@ function ProductPage(){
                                     </p>
                                 )}
 
-                                <p className="bg-primary-hover inline-block text-gray-100 py-1 px-3 rounded-xl">همراه با 18 ماه گارانتی</p>
+                                <p className="bg-primary inline-block text-gray-100 py-1 px-3 rounded-xl">همراه با 18 ماه گارانتی</p>
                             </div>
 
                             {/* بخش قیمت و عملیات خرید */}
@@ -211,7 +211,7 @@ function ProductPage(){
                                     <button 
                                         onClick={addToCartHandler}
                                         disabled={isAdding}
-                                        className="w-full flex-1 bg-primary-hover hover:bg-primary text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
+                                        className="w-full flex-1 bg-primary hover:bg-primary-hover text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
                                         {isAdding ? (
                                             <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
