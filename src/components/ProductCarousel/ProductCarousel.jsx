@@ -21,7 +21,13 @@ export default function ProductCarousel({ category , title }) {
     const products = typeof data === "string" ? JSON.parse(data) : data
 
 
-    if (isLoading) return <div>در حال بارگذاری محصولات {title}...</div>;
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+            
+            </div>
+        );
+    }
     if (isError) return <div>خطا در دریافت اطلاعات!</div>;
 
     return (

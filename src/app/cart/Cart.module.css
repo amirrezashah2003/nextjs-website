@@ -1,0 +1,32 @@
+/* Cart.module.css */
+
+/* انیمیشن ورود برای هر آیتم سبد خرید */
+.cartItem {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* افکت برای دکمه‌های تعداد (افزایش و کاهش) */
+.quantityBtn {
+  transition: all 0.2s ease;
+}
+
+.quantityBtn:active {
+  transform: scale(0.9);
+}
+
+/* افکت برای کارت اصلی محصول هنگام هاور */
+.productCard:hover {
+  border-color: var(--primary); /* استفاده از متغیر رنگ اصلی تو */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}

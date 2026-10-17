@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function AuthPage() {
     const [step, setStep] = useState('phone'); // 'phone' یا 'otp'
@@ -10,7 +10,10 @@ export default function AuthPage() {
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const router = useRouter();
+
+
+    const searchParams = useSearchParams(); // ۲. تعریف searchParams
+    const callbackUrl = searchParams.get('callback') || '/'; // ۳. خواندن پارامتر callback یا پیش‌فرض خانه
 
 
 
@@ -49,9 +52,37 @@ export default function AuthPage() {
     setError('');
 
     try {
+      // ۱. تایید کد و دریافت پاسخ
       const response = await axios.post('/api/auth/verify-otp', { phone, code: otp });
+
+      // ۲. بررسی و انتقال سبد خرید مهمان (Guest Cart) به دیتابیس
+      const guestCart = JSON.parse(localStorage.getItem('guest_cart') || '[]');
+      
+      if (guestCart.length > 0) {
+        try {
+          // استخراج userId و توکن احتمالی از خروجی لاگین جهت دور زدن تاخیر ست شدن کوکی
+          const userId = response.data?.user?.id || response.data?.userId;
+          const userToken = response.data?.token || response.data?.accessToken;
+
+          await axios.post(
+            '/api/carts/merge',
+            { 
+              items: guestCart,
+              userId: userId,
+              token: userToken
+            },
+            { withCredentials: true } // حیاتی برای ارسال کوکی لاگین به سرور
+          );
+          
+          // پاک کردن سبد مهمان از لوکال‌استوریج پس از انتقال موفق
+          localStorage.removeItem('guest_cart');
+        } catch (syncErr) {
+          console.error('Failed to sync guest cart on login:', syncErr);
+        }
+      }
+
       alert(response.data.message || 'با موفقیت وارد شدید!');
-      window.location.href = '/'; 
+      window.location.href = decodeURIComponent(callbackUrl);
       
     } catch (err) {
       setError(err.response?.data?.error || 'کد وارد شده اشتباه است.');

@@ -16,6 +16,8 @@ model Product {
   price    BigInt // چون قیمت‌ها بزرگ هستند (مثل ۶۵۹ میلیون تومان) از BigInt استفاده می‌کنیم
   info     String
   img      String
+
+  cartItems CartItem[] // رابطه با آیتم‌های سبد خرید
 }
 
 
@@ -26,6 +28,8 @@ model User {
   name      String?  // نام کاربر (اختیاری در زمان ثبت‌نام اولیه)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  cart Cart? // هر کاربر حداکثر یک سبد خرید فعال دارد
 }
 
 
@@ -38,4 +42,37 @@ model Otp {
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+
+
+
+
+
+
+
+
+// ==================== مدل‌های سبد خرید ====================
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int?       @unique // اگر کاربر لاگین کرده باشد؛ برای سبد مهمان خالی می‌ماند
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  price     BigInt   // قیمت لحظه‌ای محصول در زمانِ افزودن به سبد
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId]) // هر محصول فقط یک‌بار در سبد ثبت می‌شود و quantity افزایش می‌یابد
 }

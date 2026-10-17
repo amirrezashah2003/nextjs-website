@@ -35,7 +35,13 @@ export default function ProductBrand(){
     const products = typeof data === "string" ? JSON.parse(data) : data
 
 
-    if (isLoading) return <div>در حال بارگذاری محصولات {categoryName}ی {brandName}...</div>;
+    if (isLoading) {
+        return (
+        <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+        );
+    }
     if (isError) return <div>خطا در دریافت اطلاعات!</div>;
     
     

@@ -9,6 +9,7 @@ async function Header(){
   const tokenCookie = cookieStore.get('token')
 
   let userPhone = null;
+  let userId = null;
 
   if (tokenCookie) {
     try {
@@ -19,6 +20,7 @@ async function Header(){
         process.env.JWT_SECRET || 'super-secret-key'
       );
       userPhone = decoded.phone;
+      userId = decoded.userId || decoded.id; 
     } catch (err) {
       userPhone = null;
     }
@@ -26,7 +28,7 @@ async function Header(){
 
     return(
     <header>
-        <HeaderUp userPhone={userPhone} />
+        <HeaderUp userPhone={userPhone} userId={userId} />
         <HeaderDown />
     </header>
     )

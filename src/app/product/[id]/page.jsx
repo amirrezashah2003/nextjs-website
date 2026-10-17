@@ -3,28 +3,97 @@ import { useState } from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useProductsById } from "@/components/hooks/useProducts"
+import { useAddToCart } from "@/components/hooks/useCart"
+import { toast, Toaster } from "react-hot-toast" 
 import { FaShoppingCart, FaHeart, FaRegHeart, FaShareAlt, FaShieldAlt, FaTruck, FaUndo, FaCheckCircle } from 'react-icons/fa';
+import { useUser } from "@/components/hooks/useUser";
+
 function ProductPage(){
     const params = useParams()
     const productId = params.id
     const { data , isLoading , isError } = useProductsById(productId)
     const product = typeof data === "string" ? JSON.parse(data) : data
 
-    console.log(product)
+    const { userId, isLoading: isUserLoading } = useUser();
+    // استفاده از هوک افزودن به سبد خرید
+    const { mutate: addToCart, isPending: isAdding } = useAddToCart();
     
 
     const [isFavorite, setIsFavorite] = useState(false)
     const [quantity, setQuantity] = useState(1)
 
+    //  تعریف تابع مدیریت کلیک روی دکمه افزودن به سبد خرید
+    const addToCartHandler = () => {
+        if (!product || product.length === 0) return;
+
+        const currentProduct = product[0];
+
+        // اگر کاربر لاگین نکرده باشد (userId وجود نداشته باشد)
+        if (!userId) {
+            try {
+                // خواندن سبد خرید فعلی از localStorage
+                const existingCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+                
+                // بررسی اینکه آیا محصول قبلاً در سبد خرید مهمان هست یا خیر
+                const existingIndex = existingCart.findIndex(item => item.productId === currentProduct.id);
+                
+                if (existingIndex > -1) {
+                    existingCart[existingIndex].quantity += quantity;
+                } else {
+                    existingCart.push({
+                        productId: currentProduct.id,
+                        name: currentProduct.name,
+                        price: currentProduct.price,
+                        img: currentProduct.img,
+                        brand: currentProduct.brand,
+                        quantity: quantity
+                    });
+                }
+
+                // ذخیره مجدد در localStorage
+                localStorage.setItem("guest_cart", JSON.stringify(existingCart));
+                window.dispatchEvent(new Event("guest_cart_updated"));
+                
+                toast.success("محصول با موفقیت به سبد خرید مهمان اضافه شد!");
+            } catch (error) {
+                console.error("Guest cart error:", error);
+                toast.error("خطایی در افزودن محصول رخ داد");
+            }
+            return;
+        }
+
+        // اگر کاربر لاگین کرده باشد، درخواست به سرور ارسال می‌شود
+        addToCart({
+            userId: userId,
+            productId: currentProduct.id, 
+            quantity: quantity
+        }, {
+            onSuccess: () => {
+                toast.success("محصول با موفقیت به سبد خرید اضافه شد!");
+            },
+            onError: (err) => {
+                toast.error("خطایی در افزودن محصول رخ داد");
+                console.error(err);
+            }
+        });
+    };
 
 
-    if (isLoading) return <div>در حال بارگذاری محصول ...</div>;
+    if (isLoading){
+        return (
+        <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+        );
+    }
     if (isError || !product) return <div>خطا در دریافت اطلاعات!</div>;
 
 
     return (
         <div className="min-h-screen bg-gray-50 in-[.dark]:bg-gray-950 py-8 transition-colors">
-            <div className="container mx-auto px-4">
+            <Toaster position="top-center" reverseOrder={false} />
+
+            <div className="container px-4">
                 
                 {/* مسیر راهنما (Breadcrumb) */}
                 <nav className="text-sm text-gray-500 in-[.dark]:text-gray-400 mb-6 flex items-center gap-2">
@@ -139,9 +208,17 @@ function ProductPage(){
                                     </div>
 
                                     {/* دکمه افزودن به سبد خرید */}
-                                    <button className="w-full flex-1 bg-primary-hover hover:bg-primary text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.01] active:scale-[0.99]">
-                                        <FaShoppingCart className="text-lg" />
-                                        افزودن به سبد خرید
+                                    <button 
+                                        onClick={addToCartHandler}
+                                        disabled={isAdding}
+                                        className="w-full flex-1 bg-primary-hover hover:bg-primary text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
+                                    >
+                                        {isAdding ? (
+                                            <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                        ) : (
+                                            <FaShoppingCart className="text-lg" />
+                                        )}
+                                        {isAdding ? "در حال افزودن..." : "افزودن به سبد خرید"}
                                     </button>
 
                                     {/* دکمه اشتراک‌گذاری */}
