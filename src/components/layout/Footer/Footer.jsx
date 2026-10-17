@@ -1,6 +1,6 @@
 import Link from 'next/link';
 // ایمپورت آیکون‌ها از react-icons/fa (FontAwesome)
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaTelegram , FaLinkedin , FaGithub } from 'react-icons/fa';
 import Image from 'next/image';
 
 
@@ -32,8 +32,7 @@ function Footer(){
           <div className="space-y-4">
             <h3 className="font-bold text-gray-900 in-[.dark]:text-white">دسترسی سریع</h3>
             <ul className="space-y-2 text-sm text-gray-600 in-[.dark]:text-gray-400">
-              <li><Link href="/about" className="hover:text-primary-hover! transition-colors">درباره ما</Link></li>
-              <li><Link href="/contact" className="hover:text-primary-hover! transition-colors">تماس با ما</Link></li>
+              <li><Link href="/about" className="hover:text-primary-hover! transition-colors">درباره من</Link></li>
             </ul>
           </div>
 
@@ -73,9 +72,16 @@ function Footer(){
         <div className="border-t border-gray-200 dark:border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
           <p>© تمامی حقوق برای فروشگاه محفوظ است.</p>
           <div className="flex gap-4 text-lg">
-             <FaInstagram className="cursor-pointer hover:text-primary-hover transition-colors" />
-             <FaLinkedin className="cursor-pointer hover:text-primary-hover transition-colors" />
-             <FaTwitter className="cursor-pointer hover:text-primary-hover transition-colors" />
+             <a href="https://t.me/amirreza2003">
+              <FaTelegram className="cursor-pointer hover:text-primary-hover transition-colors" />
+             </a>
+             <a href="https://www.linkedin.com/in/amirreza-shahmohammadi-031425398/?isSelfProfile=true">
+                <FaLinkedin className="cursor-pointer hover:text-primary-hover transition-colors" />
+             </a>
+             <a href="https://github.com/amirrezashah2003">
+              <FaGithub className="cursor-pointer hover:text-primary-hover transition-colors"/>
+             </a>
+            
           </div>
         </div>
       </div>

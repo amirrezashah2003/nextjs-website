@@ -316,7 +316,7 @@ export default function HeaderDown(){
                                 </a>
                             </li>
                             <li>
-                                <a href="" className="flex items-center border-b-3 border-primary rounded-[7px] py-1 px-2 hover:border-primary-hover hover:text-text-hover"> درباره من </a>
+                                <a href="/about" className="flex items-center border-b-3 border-primary rounded-[7px] py-1 px-2 hover:border-primary-hover hover:text-text-hover"> درباره من </a>
                             </li>
                         </ul>
                     </nav>
