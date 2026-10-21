@@ -1,6 +1,7 @@
 import MainLayout from "@/components/MainLayout";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
 import QueryProvider from "./QueryProvider";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           <NextThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
             <MainLayout>
              {children}
+             <Toaster position="top-center" reverseOrder={false} />
             </MainLayout>     
           </NextThemeProvider>
         </QueryProvider>

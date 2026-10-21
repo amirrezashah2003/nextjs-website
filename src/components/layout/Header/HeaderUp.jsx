@@ -1,106 +1,84 @@
 "use client";
+
 import Image from "next/image";
-import { FaBasketShopping, FaMagnifyingGlass } from "react-icons/fa6";
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { FaBasketShopping } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
-import Styles from "./HeaderUp.module.css";
-import { useCart } from "@/components/hooks/useCart"; 
+import { useCart } from "@/components/hooks/useCart";
 import { usePathname } from "next/navigation";
+import SearchBox from "@/components/SearchBox/SearchBox";
 
 function HeaderUp({ userPhone, userId }) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const [guestCount, setGuestCount] = useState(0); // ذخیره تعداد برای حالت مهمان
-  const inputRef = useRef(null);
-  const magnifyRef = useRef(null);
+  const [guestCount, setGuestCount] = useState(0);
 
   const { data: cart } = useCart(userId);
 
-  // ۱. تابع خواندن تعداد محصولات از لوکال‌استوریج برای کاربر مهمان
   const updateGuestCount = () => {
     try {
       const items = JSON.parse(localStorage.getItem("guest_cart") || "[]");
-      const total = items.reduce((acc, item) => acc + Number(item.quantity || 1), 0);
+      const total = items.reduce(
+        (acc, item) => acc + Number(item.quantity || 1),
+        0
+      );
       setGuestCount(total);
     } catch {
       setGuestCount(0);
     }
   };
 
-  // ۲. مدیریت لیسنرها برای آپدیت آنی تعداد مهمان
   useEffect(() => {
     if (!userId) {
       updateGuestCount();
     }
-
-    const handleGuestCartUpdate = () => {
-      updateGuestCount();
-    };
-
+    const handleGuestCartUpdate = () => updateGuestCount();
     window.addEventListener("guest_cart_updated", handleGuestCartUpdate);
     window.addEventListener("storage", handleGuestCartUpdate);
-
     return () => {
       window.removeEventListener("guest_cart_updated", handleGuestCartUpdate);
       window.removeEventListener("storage", handleGuestCartUpdate);
     };
   }, [userId]);
 
-  // ۳. محاسبه تعداد کل: اگر لاگین بود از دیتابیس، در غیر این صورت از لوکال‌استوریج
-  const serverItemsCount = cart?.items?.reduce((acc, item) => acc + Number(item.quantity || 1), 0) || 0;
+  const serverItemsCount =
+    cart?.items?.reduce((acc, item) => acc + Number(item.quantity || 1), 0) || 0;
+
   const totalItems = userId ? serverItemsCount : guestCount;
 
-  useEffect(() => {
-    const outsideInputHandler = (e) => {
-      const insideInput = inputRef.current?.contains(e.target);
-      const magnify = magnifyRef.current?.contains(e.target);
-      if (!insideInput && !magnify) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("click", outsideInputHandler);
-    return () => {
-      document.removeEventListener("click", outsideInputHandler);
-    };
-  }, [inputRef, magnifyRef]);
-
-  const searchHandler = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
-    <div className="bg-bg-tertiary h-20 select-none text-xs sm:text-sm md:text-base">
-      <div className="container h-10/10">
-        <div className="row h-10/10 grid grid-cols-[1fr_9fr] lg:grid-cols-[4fr_6fr]">
-          <div className="flex items-center">
-            <div className="flex items-center relative w-14 h-14 md:w-20 md:h-20">
-              <a href="/">
-                <Image 
+    <div className="bg-bg-tertiary h-20 select-none text-xs sm:text-sm md:text-base transition-colors relative z-50">
+      <div className="container h-full px-4 flex items-center">
+        <div className="w-full grid grid-cols-10 justify-start ">
+          {/* سمت راست: لوگو + سرچ دسکتاپ */}
+          <div className="col-span-3 md:col-span-5 flex items-center gap-1 flex-1 justify-start">
+            <div className="flex items-center relative w-12 h-12 md:w-16 md:h-16 shrink-0">
+              <Link href="/" className="relative w-full h-full block">
+                <Image
                   src="/logo/amir-logo.png"
                   alt="amir logo"
                   fill
+                  className="object-contain"
+                  sizes="64px"
+                  priority
                 />
-              </a>
+              </Link>
             </div>
-            {/* اینپوت سرچ دسکتاپ */}
-            <div className="input items-center hidden lg:flex flex-1">
-              <input className={`${Styles.input}`} type="text" placeholder="جستجوی محصولات ..." />
-            </div>
+
+            {/* این کامپوننت هم سرچ دسکتاپ دارد هم موبایل (دکمه+پنل) */}
+            <SearchBox />
           </div>
 
-          <div className="flex gap-0.5 md:gap-4 justify-end items-center relative">
-            <FaMagnifyingGlass ref={magnifyRef} onClick={searchHandler} className="lg:hidden w-5 h-5 me-2" />
-            {/* اینپوت سرچ موبایل */}
-            <div ref={inputRef} className={`${Styles.searchcontainer} ${isOpen ? Styles.active : ""} lg:hidden`}> 
-              <input className={`${Styles.search}`} type="text" placeholder="جستجوی محصولات ..." />
-            </div>
-
+          {/* سمت چپ: اکشن‌ها */}
+          <div className="col-span-7 md:col-span-5 flex items-center gap-1 md:gap-4 relative justify-end">
+            {/* SearchBox دکمه موبایلش را خودش می‌آورد، پس اینجا چیزی اضافه نمی‌کنیم */}
             <ThemeToggle />
 
+            {/* بخش کاربر */}
             <div>
               {userPhone ? (
-                <div className="flex items-end gap-1 md:gap-3">
-                  <span className="text-xs font-medium border-b border-primary rounded-[5px] px-2 py-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-primary! border border-primary! rounded-lg px-2.5 py-1.5 inline-block">
                     {userPhone}
                   </span>
                   <button
@@ -108,33 +86,37 @@ function HeaderUp({ userPhone, userId }) {
                       await fetch("/api/auth/logout", { method: "POST" });
                       window.location.reload();
                     }}
-                    className="border border-primary rounded-[5px] px-2 py-1"
+                    className="border border-red-200 in-[.dark]:border-red-900/50 text-red-600 in-[.dark]:text-red-400 hover:bg-red-50 in-[.dark]:hover:bg-red-950/30 rounded-lg px-3 py-1.5 transition-colors text-xs font-medium"
                   >
                     خروج
                   </button>
                 </div>
               ) : (
-                <a
+                <Link
                   href={`/auth?callback=${encodeURIComponent(pathname)}`}
-                  className="border border-primary rounded-[5px] px-2 py-1"
+                  className="border border-primary text-primary hover:bg-primary hover:text-white! rounded-lg px-3 py-1.5 transition-colors text-xs font-medium"
                 >
                   ورود | ثبت‌نام
-                </a>
+                </Link>
               )}
             </div>
 
-            <a href="/cart" className="flex items-center border border-primary rounded-[5px] px-2 py-1 relative">
-              <span>سبد خرید</span>
-              <FaBasketShopping className="h-4 w-4 md:h-6 md:w-6" />
-            
-              {/* نمایش تعداد آیتم‌ها */}
+            {/* سبد خرید */}
+            <Link
+              href="/cart"
+              className="flex items-center gap-1 bg-primary hover:bg-primary-hover text-gray-100! rounded-lg px-3.5 py-1.5 transition-all shadow-sm active:scale-[0.98] relative"
+            >
+              <FaBasketShopping className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden sm:inline font-medium">سبد خرید</span>
+
               {totalItems > 0 && (
-                <span className={`${Styles.shopnumber} text-white`}>
+                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
                   {totalItems}
                 </span>
               )}
-            </a>
+            </Link>
           </div>
+
         </div>
       </div>
     </div>

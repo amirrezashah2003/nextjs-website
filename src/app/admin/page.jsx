@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { 
-  FiBox, FiUsers, FiPlus, FiEdit2, FiTrash2, 
-  FiCheck, FiX, FiAlertCircle, FiShield 
-} from "react-icons/fi";
+import { FiBox, FiUsers, FiPlus, FiEdit2, FiTrash2, FiX, FiShield } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 export default function AdminPage() {
@@ -15,16 +12,22 @@ export default function AdminPage() {
   // States for Product Modal
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [productForm, setProductForm] = useState({
-    category: "", brand: "", model: "", name: "", price: "", info: "", img: ""
-  });
+  const [productForm, setProductForm] = useState({ category: "", brand: "", model: "", name: "", price: "", info: "", img: "" });
 
   // States for User Modal
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [userForm, setUserForm] = useState({ name: "", phone: "" });
 
-  const queryClient = useQueryClient();
+  const [originalProductForm, setOriginalProductForm] = useState(null);
+  const [originalUserForm, setOriginalUserForm] = useState(null);
+
+
+
+
+
+
+
 
   // --- FETCH PRODUCTS ---
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -34,7 +37,7 @@ export default function AdminPage() {
       return res.data.products;
     }
   });
-
+  
   // --- FETCH USERS ---
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -43,7 +46,13 @@ export default function AdminPage() {
       return res.data.users;
     }
   });
+  
 
+
+
+
+
+  const queryClient = useQueryClient();
   // --- PRODUCT MUTATIONS ---
   const saveProductMutation = useMutation({
     mutationFn: async (formData) => {
@@ -72,6 +81,11 @@ export default function AdminPage() {
     onError: (err) => toast.error(err.response?.data?.error || "خطا در حذف محصول")
   });
 
+
+
+
+
+
   // --- USER MUTATIONS ---
   const updateUserMutation = useMutation({
     mutationFn: async (formData) => {
@@ -94,16 +108,25 @@ export default function AdminPage() {
     onError: (err) => toast.error(err.response?.data?.error || "خطا در حذف کاربر")
   });
 
+
+
+
+
+
+
+
+
   // Handlers
   const handleOpenCreateProduct = () => {
     setEditingProduct(null);
     setProductForm({ category: "", brand: "", model: "", name: "", price: "", info: "", img: "" });
+    setOriginalProductForm(null); 
     setIsProductModalOpen(true);
   };
 
   const handleOpenEditProduct = (product) => {
     setEditingProduct(product);
-    setProductForm({
+    const formData = {
       category: product.category || "",
       brand: product.brand || "",
       model: product.model || "",
@@ -111,25 +134,86 @@ export default function AdminPage() {
       price: product.price || "",
       info: product.info || "",
       img: product.img || ""
-    });
+    };
+    setProductForm(formData);
+    // 📌 ذخیره مقادیر اولیه برای مقایسه
+    setOriginalProductForm({ ...formData });
     setIsProductModalOpen(true);
   };
 
   const closeProductModal = () => {
     setIsProductModalOpen(false);
     setEditingProduct(null);
+    setOriginalProductForm(null);
   };
+
+
+
+
+
+    // 📌 تابع بررسی اینکه آیا تغییری رخ داده است یا خیر
+  const hasProductFormChanged = () => {
+    if (!originalProductForm) return true; // در حالت افزودن، همیشه مجاز به ارسال هستیم
+    return Object.keys(originalProductForm).some(
+      (key) => originalProductForm[key] !== (productForm[key] || "")
+    );
+  };
+
+  // 📌 هندلر ارسال فرم محصول
+  const handleSubmitProductForm = (e) => {
+    e.preventDefault();
+
+    // 🔥 اگر در حالت ویرایش هستیم و هیچ تغییری نداشته باشد، درخواست ارسال نشود
+    if (editingProduct && !hasProductFormChanged()) {
+      toast("هیچ تغییری ایجاد نشده است", { icon: "ℹ️" });
+      return;
+    }
+
+    saveProductMutation.mutate(productForm);
+  };
+
+
+
+
+
 
   const handleOpenEditUser = (user) => {
     setEditingUser(user);
-    setUserForm({ name: user.name || "", phone: user.phone || "" });
+    const formData = {
+      name: user.name || "",
+      phone: user.phone || "",
+    };
+    setUserForm(formData);
+    setOriginalUserForm({ ...formData });
     setIsUserModalOpen(true);
   };
 
   const closeUserModal = () => {
     setIsUserModalOpen(false);
     setEditingUser(null);
+    setOriginalUserForm(null)
   };
+
+  const hasUserFormChanged = () => {
+  if (!originalUserForm) return true;
+  return Object.keys(originalUserForm).some(
+    (key) => originalUserForm[key] !== (userForm[key] || "")
+  );
+};
+
+// 📌 هندلر ارسال فرم کاربر
+const handleSubmitUserForm = (e) => {
+  e.preventDefault();
+
+  // اگر هیچ تغییری ایجاد نشده بود
+  if (editingUser && !hasUserFormChanged()) {
+    toast("هیچ تغییری ایجاد نشده است", { icon: "ℹ️" });
+    return;
+  }
+
+  updateUserMutation.mutate(userForm);
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 in-[.dark]:bg-gray-950 text-gray-800 in-[.dark]:text-gray-100 p-4 md:p-8 transition-colors duration-300">
@@ -325,7 +409,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); saveProductMutation.mutate(productForm); }} className="space-y-4">
+            <form onSubmit={handleSubmitProductForm} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">نام محصول</label>
@@ -417,6 +501,30 @@ export default function AdminPage() {
         </div>
       )}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {/* --- USER MODAL --- */}
       {isUserModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -428,7 +536,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); updateUserMutation.mutate(userForm); }} className="space-y-4">
+            <form onSubmit={handleSubmitUserForm} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">نام و نام خانوادگی</label>
                 <input

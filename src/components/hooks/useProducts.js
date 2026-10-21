@@ -3,54 +3,57 @@ import { getProducts , getProductByBrand , getProductsByCategoryAndBrand , getPr
 
 
 
-export const useProducts = (category) => {
+export const useProducts = (category, page = 1) => {
+  return useQuery({
+    queryKey: ["products", category, page],
+    queryFn: () => getProducts(category, page),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 5,
+    placeholderData: (previousData) => previousData,
+  });
+};
+
+
+
+export const useProductsByBrand = (brand, page = 1) => {
     return useQuery({
-        // کلید کش با دسته‌بندی تغییر می‌کند (products, laptop)
-        queryKey: ["products" , category],
-        queryFn: () => getProducts(category),
-        staleTime: 1000 * 60 * 5,
+        queryKey: ["products", "brand", brand, page], // اضافه شدن page به کلید
+        queryFn: () => getProductByBrand(brand, page),
+        staleTime: 1000 * 60,
         gcTime: 1000 * 60 * 5,
+        placeholderData: (previousData) => previousData, // برای جلوگیری از پرش صفحه هنگام لود صفحه جدید
+    })
+}
+
+export const useProductsByCategoryAndBrand = (category, brand, page = 1) => {
+    return useQuery({
+        queryKey: ["products", "category", category, brand, page], // اضافه شدن page به کلید
+        queryFn: () => getProductsByCategoryAndBrand(category, brand, page),
+        staleTime: 1000 * 60,
+        gcTime: 1000 * 60 * 5,
+        placeholderData: (previousData) => previousData,
     })
 }
 
 
 
-export const useProductsByBrand = (brand) => {
+export const useProductsByCategoryAndBrandAndModel = (category, brand, model, page = 1) => {
     return useQuery({
-        queryKey: ["products" , brand],
-        queryFn: () => getProductByBrand(brand),
+        queryKey: ["products", "category-brand-model", category, brand, model, page],
+        queryFn: () => getProductsByCategoryAndBrandAndModel(category, brand, model, page),
         staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5
-    })
-}
-
-
-export const useProductsByCategoryAndBrand = (category , brand) => {
-    return useQuery({
-        queryKey: ["products" , category , brand],
-        queryFn: () => getProductsByCategoryAndBrand(category , brand),
-        staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5
-    })
-}
-
-
-
-export const useProductsByCategoryAndBrandAndModel = (category , brand , model) => {
-    return useQuery({
-        queryKey: ["products" , category , brand , model],
-        queryFn: () => getProductsByCategoryAndBrandAndModel(category , brand , model),
-        staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5
+        gcTime: 1000 * 60 * 5,
+        placeholderData: (previousData) => previousData, // جلوگیری از پرش صفحه در زمان لود صفحه جدید
     })
 }
 
 
 export const useProductsById = (id) => {
     return useQuery({
-        queryKey: [id , "products"],
+        queryKey: ["products", id], // مرتب‌سازی کلید کوئری به شکل استانداردتر
         queryFn: () => getProductsById(id),
         staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5
+        gcTime: 1000 * 60 * 5,
+        enabled: !!id, // تا وقتی id نیامده ریکوئست زده نشود
     })
 }

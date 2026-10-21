@@ -12,7 +12,10 @@ function ProductPage(){
     const params = useParams()
     const productId = params.id
     const { data , isLoading , isError } = useProductsById(productId)
-    const product = typeof data === "string" ? JSON.parse(data) : data
+    const rawData = typeof data === "string" ? JSON.parse(data) : data;
+    const product = rawData?.products ? rawData.products[0] : (Array.isArray(rawData) ? rawData[0] : rawData);
+
+
 
     const { userId, isLoading: isUserLoading } = useUser();
     // استفاده از هوک افزودن به سبد خرید
@@ -24,28 +27,26 @@ function ProductPage(){
 
     //  تعریف تابع مدیریت کلیک روی دکمه افزودن به سبد خرید
     const addToCartHandler = () => {
-        if (!product || product.length === 0) return;
-
-        const currentProduct = product[0];
+        if (!product) return;
 
         // اگر کاربر لاگین نکرده باشد (userId وجود نداشته باشد)
         if (!userId) {
             try {
                 // خواندن سبد خرید فعلی از localStorage
-                const existingCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
-                
+                const existingCart = JSON.parse(localStorage.getItem("guest_cart")) || [];             
                 // بررسی اینکه آیا محصول قبلاً در سبد خرید مهمان هست یا خیر
-                const existingIndex = existingCart.findIndex(item => item.productId === currentProduct.id);
+                const existingIndex = existingCart.findIndex(item => item.productId === product.id);
+
                 
                 if (existingIndex > -1) {
                     existingCart[existingIndex].quantity += quantity;
                 } else {
                     existingCart.push({
-                        productId: currentProduct.id,
-                        name: currentProduct.name,
-                        price: currentProduct.price,
-                        img: currentProduct.img,
-                        brand: currentProduct.brand,
+                        productId: product.id,
+                        name: product.name,
+                        price: product.price,
+                        img: product.img,
+                        brand: product.brand,
                         quantity: quantity
                     });
                 }
@@ -65,7 +66,7 @@ function ProductPage(){
         // اگر کاربر لاگین کرده باشد، درخواست به سرور ارسال می‌شود
         addToCart({
             userId: userId,
-            productId: currentProduct.id, 
+            productId: product.id, 
             quantity: quantity
         }, {
             onSuccess: () => {
@@ -88,7 +89,7 @@ function ProductPage(){
     }
     if (isError || !product) return <div>خطا در دریافت اطلاعات!</div>;
 
-
+    const productImg = product.img && product.img.trim() !== "" ? product.img : "/placeholder.png";
     return (
         <div className="min-h-screen bg-gray-50 in-[.dark]:bg-gray-950 py-8 transition-colors">
             <Toaster position="top-center" reverseOrder={false} />
@@ -98,9 +99,9 @@ function ProductPage(){
                 {/* مسیر راهنما (Breadcrumb) */}
                 <nav className="text-sm text-gray-500 in-[.dark]:text-gray-400 mb-6 flex items-center gap-2">
                     <span>خانه</span> / 
-                    <span className="uppercase">{product[0].category}</span> / 
-                    <span className="uppercase">{product[0].brand}</span> / 
-                    <span className="text-gray-900 in-[.dark]:text-white font-medium truncate">{product[0].model}</span>
+                    <span className="uppercase">{product.category}</span> / 
+                    <span className="uppercase">{product.brand}</span> / 
+                    <span className="text-gray-900 in-[.dark]:text-white font-medium truncate">{product.model}</span>
                 </nav>
 
                 {/* بدنه اصلی صفحه محصول */}
@@ -111,8 +112,8 @@ function ProductPage(){
                         <div className="lg:col-span-5 flex flex-col gap-4">
                             <div className="relative w-full aspect-square bg-gray-100 in-[.dark]:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 in-[.dark]:border-gray-800 group">
                                 <Image
-                                    src={product[0].img}
-                                    alt={product[0].name}
+                                    src={productImg}
+                                    alt={product.name}
                                     fill
                                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                     sizes="(max-width: 768px) 100vw, 40vw"
@@ -152,7 +153,7 @@ function ProductPage(){
                                 {/* برند و وضعیت موجودی */}
                                 <div className="flex items-center justify-between">
                                     <span className="px-3 py-1 bg-indigo-50 in-[.dark]:bg-indigo-950/50 text-primary-hover in-[.dark]:text-primary text-xs font-bold rounded-full uppercase">
-                                        {product[0].brand}
+                                        {product.brand}
                                     </span>
                                     <span className="flex items-center gap-1 text-emerald-600 in-[.dark]:text-emerald-400 text-xs font-semibold">
                                         <FaCheckCircle /> موجود در انبار
@@ -161,13 +162,13 @@ function ProductPage(){
 
                                 {/* نام محصول */}
                                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 in-[.dark]:text-white leading-relaxed">
-                                    {product[0].name}
+                                    {product.name}
                                 </h1>
 
                                 {/* اطلاعات فنی (info) */}
-                                {product[0].info && (
+                                {product.info && (
                                     <p className="text-sm text-gray-500 in-[.dark]:text-gray-400 bg-gray-50 in-[.dark]:bg-gray-800/50 p-3 rounded-xl border border-gray-100 in-[.dark]:border-gray-800 font-mono">
-                                        {product[0].info}
+                                        {product.info}
                                     </p>
                                 )}
 
@@ -181,7 +182,7 @@ function ProductPage(){
                                     <span className="text-sm text-gray-500 in-[.dark]:text-gray-400">قیمت نهایی:</span>
                                     <div className="text-left">
                                         <span className="text-2xl md:text-3xl font-black text-gray-900 in-[.dark]:text-white">
-                                            {product[0].price ? product[0].price.toLocaleString() : '۰'}
+                                            {product.price ? product.price.toLocaleString() : '۰'}
                                         </span>
                                         <span className="text-xs text-gray-500 mr-1">تومان</span>
                                     </div>

@@ -5,9 +5,9 @@ import Link from "next/link";
 
 export default function ProductCard({ product }) {
   return (
-    <div className="flex flex-col border border-gray-700 rounded-2xl p-4 bg-bg-secondary shadow-sm hover:shadow-lg transition-all duration-300 group">
+    <div className="flex flex-col bg-white in-[.dark]:bg-zinc-900 border border-zinc-200 in-[.dark]:border-zinc-800 p-4 rounded-2xl shadow-sm group transition-all duration-200 hover:shadow-lg hover:border-primary/50">
       {/* بخش تصویر */}
-      <Link href={`/product/${product.id}`}  className={`relative w-full aspect-square mb-4 overflow-hidden rounded-xl in-[.light]:bg-gray-300 in-[.dark]:bg-gray-500`}>
+      <Link href={`/product/${product.id}`}  className={`relative w-full aspect-square mb-4 overflow-hidden rounded-xl bg-gray-200 in-[.dark]:bg-gray-800`}>
         <Image
           src={product.img}
           alt={product.name}

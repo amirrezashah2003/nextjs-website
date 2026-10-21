@@ -1,8 +1,8 @@
 "use client"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { useProductsByCategoryAndBrandAndModel } from "@/components/hooks/useProducts"
 import ProductCard from "@/components/ProductCard/ProductCard"
-
+import Pagination from "@/components/pagination/pagination"
 
 const categoryMap = {
     laptop: "لپتاپ ها",
@@ -22,6 +22,7 @@ const brandMap = {
     sony: "سونی",
     microsoft: "مایکروسافت"
 }
+
 const modelMap = {
     rog: "راگ",
     tuf: "تاف",
@@ -39,9 +40,13 @@ const modelMap = {
     redmi: "ردمی"
 }
 
-
 export default function ProductBrand(){
     const params = useParams()
+    const searchParams = useSearchParams()
+    
+    // خواندن شماره صفحه از URL (پیش‌فرض ۱)
+    const page = Number(searchParams.get("page")) || 1
+
     const model = params.productModel
     const modelName = modelMap[model]
     const brand = params.productBrand
@@ -49,30 +54,44 @@ export default function ProductBrand(){
     const category = params.productName
     const categoryName = categoryMap[category]
     
-    const { data , isLoading , isError} = useProductsByCategoryAndBrandAndModel(category , brand , model)
-    const products = typeof data === "string" ? JSON.parse(data) : data
-
+    // ارسال صفحه به هوک
+    const { data, isLoading, isError } = useProductsByCategoryAndBrandAndModel(category, brand, model, page)
+    
+    // استخراج امن محصولات و اطلاعات پجینیشن از خروجی آبجکت
+    const products = data?.products ?? []
+    const totalPages = data?.totalPages ?? 1
 
     if (isLoading){
         return (
-        <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
+            <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
         );
     }
-    if (isError) return <div>خطا در دریافت اطلاعات!</div>;
     
+    if (isError) return <div className="text-center py-10 text-red-500">خطا در دریافت اطلاعات!</div>;
     
     return(
         <main className="container mx-auto px-4 py-8">  
             <h1 className="text-2xl font-bold mb-8 text-gray-800 in-[.dark]:text-gray-200">محصولات فروشگاه</h1>
-            <h2 className="mb-2 text-center">لیست {categoryName}ی {brandName} {modelName}</h2>
+            <h2 className="mb-6 text-center text-lg font-medium text-gray-600 in-[.dark]:text-gray-400">
+                لیست {categoryName} {brandName} {modelName}
+            </h2>
     
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {products.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
+            {products.length === 0 ? (
+                <p className="text-center text-gray-500 py-12">محصولی یافت نشد.</p>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                        {products.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+
+                    {/* کامپوننت پجینیشن */}
+                    <Pagination totalPages={totalPages} currentPage={page} />
+                </>
+            )}
         </main>
     )
 }

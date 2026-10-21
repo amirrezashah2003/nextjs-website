@@ -1,78 +1,49 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-// GET: دریافت لیست محصولات (با پشتیبانی از فیلتر دسته‌بندی)
+const LIMIT = 12; // حداکثر محصول در هر صفحه
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    
-    // استخراج تمام پارامترهای احتمالی از URL
+
     const id = searchParams.get('id');
     const category = searchParams.get('category');
     const brand = searchParams.get('brand');
     const model = searchParams.get('model');
+    const page = parseInt(searchParams.get('page') || '1', 10);
 
-    // ساخت شیء فیلتر پویا (Where Clause برای Prisma)
     const filters = {};
 
-    if (id) {
-      filters.id = Number(id); // چون id در دیتابیس Int است
-    }
-    if (category) {
-      filters.category = category;
-    }
-    if (brand) {
-      filters.brand = brand;
-    }
-    if (model) {
-      filters.model = model;
-    }
+    if (id) filters.id = Number(id);
+    if (category) filters.category = category;
+    if (brand) filters.brand = brand;
+    if (model) filters.model = model;
 
-    // دریافت اطلاعات از دیتابیس با اعمال فیلترها
+    // تعداد کل محصولات با همین فیلترها (برای محاسبه تعداد صفحات)
+    const totalItems = await prisma.product.count({ where: filters });
+
     const products = await prisma.product.findMany({
       where: filters,
+      skip: (page - 1) * LIMIT,
+      take: LIMIT,
+      orderBy: { id: 'asc' }, // ترتیب ثابت تا صفحات جابه‌جا نشوند
     });
 
-    // تبدیل BigInt به Number برای جلوگیری از خطای سریالایز شدن
     const formattedProducts = products.map((product) => ({
       ...product,
       price: Number(product.price),
     }));
 
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json({
+      products: formattedProducts,
+      totalPages: Math.ceil(totalItems / LIMIT),
+      currentPage: page,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { error: 'خطا در دریافت اطلاعات از دیتابیس' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST: افزودن محصول جدید (اگر در هوکتان نیاز دارید)
-export async function POST(request) {
-  try {
-    const body = await request.json();
-
-    const newProduct = await prisma.product.create({
-      data: {
-        category: body.category,
-        brand: body.brand,
-        model: body.model,
-        name: body.name,
-        price: body.price,
-        info: body.info,
-        img: body.img,
-      },
-    });
-
-    return NextResponse.json({
-      ...newProduct,
-      price: Number(newProduct.price),
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'خطا در ثبت محصول' },
       { status: 500 }
     );
   }

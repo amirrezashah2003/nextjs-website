@@ -197,22 +197,6 @@ img {
 
 
 
-/* برای کاستوم کردن دکمه های کروسل پکیج اسوایپر */
-.swiper-button-next,
-.swiper-button-prev {
-    /* تغییر رنگ دکمه */
-    color: var(--color-primary) !important; /* رنگ مورد نظر تو (مثلاً قرمز) */
-    
-    /* تغییر اندازه دکمه */
-    --swiper-navigation-size: 30px; /* اندازه دلخواه (پیش‌فرض ۴۴ پیکسل است) */
-    
-    /* اختیاری: اگر می‌خواهی پس‌زمینه هم داشته باشند */
-    /* background: white; 
-    padding: 10px;
-    border-radius: 50%; */
-}
-
-
 
 ::selection{
   background-color: var(--color-primary);
