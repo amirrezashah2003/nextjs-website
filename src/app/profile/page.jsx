@@ -66,7 +66,6 @@ export default function ProfilePage() {
         setNotLoggedIn(true);
       }
     } catch (err) {
-      console.error("Profile fetch error:", err);
       // اگر خطای احراز هویت بود یا پاسخ 401/403 دریافت شد
       if (err.response?.status === 401 || err.response?.status === 403) {
         setNotLoggedIn(true);
@@ -130,9 +129,12 @@ export default function ProfilePage() {
     try {
       await axios.post("/api/auth/logout", {}, { withCredentials: true });
       toast.success("از حساب خارج شدید");
-      router.push("/");
+
+      window.dispatchEvent(new Event("auth_state_changed"));
+      window.location.href = "/";
+
     } catch (err) {
-      router.push("/");
+      window.location.href = "/";
     }
   };
 
@@ -185,7 +187,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => {handleLogout();}}
             className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 in-[.dark]:text-red-400 border border-red-500/20 rounded-xl transition-all text-sm font-medium"
           >
             <HiOutlineLogout className="text-lg" />

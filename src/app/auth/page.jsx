@@ -75,6 +75,7 @@ function AuthContent() {
       }
 
       // هدایت کاربر به صفحه قبلی (callback) یا صفحه اصلی
+      window.alert("خوش آمدید")
       window.location.href = decodeURIComponent(callbackUrl);
       
     } catch (err) {

@@ -226,7 +226,7 @@ export default function CartPage() {
                 </button>
 
                 <Link 
-                  href="/products" 
+                  href="/" 
                   className="block text-center mt-4 text-sm text-text-secondary hover:text-primary transition-colors"
                 >
                   ادامه خرید محصولات

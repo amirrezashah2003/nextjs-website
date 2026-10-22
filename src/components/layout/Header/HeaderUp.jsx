@@ -33,13 +33,24 @@ function HeaderUp({ userPhone, userId }) {
       updateGuestCount();
     }
     const handleGuestCartUpdate = () => updateGuestCount();
+    
+    // تابع برای هندل کردن تغییر وضعیت لاگین/خروج
+    const handleAuthStateChange = () => {
+      // اگر از Next.js router استفاده می‌کنید یا قابلیتی برای رفرش دیتای هدر دارید اینجا صدا بزنید
+      window.location.reload(); // یا تابع بررسی مجدد توکن/پروفایل در هدر
+    };
+
     window.addEventListener("guest_cart_updated", handleGuestCartUpdate);
     window.addEventListener("storage", handleGuestCartUpdate);
+    window.addEventListener("auth_state_changed", handleAuthStateChange); // 👈 اضافه شد
+
     return () => {
       window.removeEventListener("guest_cart_updated", handleGuestCartUpdate);
       window.removeEventListener("storage", handleGuestCartUpdate);
+      window.removeEventListener("auth_state_changed", handleAuthStateChange); // 👈 اضافه شد
     };
   }, [userId]);
+
 
   const serverItemsCount =
     cart?.items?.reduce((acc, item) => acc + Number(item.quantity || 1), 0) || 0;
