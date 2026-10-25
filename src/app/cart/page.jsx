@@ -7,8 +7,11 @@ import { FaShoppingBag } from "react-icons/fa";
 import Styles from "./Cart.module.css"; // حتما این فایل را بساز
 import { useMemo } from "react";
 import { useUser } from "@/components/hooks/useUser";
+import { usePathname } from "next/navigation";
 
 export default function CartPage() {
+    const pathname = usePathname();
+
     const { userId, isLoading: isUserLoading } = useUser();
     const { data: cart, isLoading: isCartLoading, isError } = useCart(userId);
 
@@ -68,7 +71,7 @@ export default function CartPage() {
                 برای مشاهده سبد خرید باید وارد حساب کاربری شوید
             </h2>
             <Link
-                href="/auth"
+                href={`/auth?callback=${encodeURIComponent(pathname)}`}
                 className="bg-primary text-white px-6 py-3 rounded-xl inline-flex items-center gap-2"
             >
                 ورود به حساب
