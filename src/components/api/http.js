@@ -7,7 +7,7 @@ const getBaseURL = () => {
     return "/api";
   }
   // اگر در سرور هستیم، باید آدرس کامل (شامل پروتکل و پورت) باشد
-  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const protocol = "http";
   const host = process.env.VERCEL_URL || "localhost:3000";
   return `${protocol}://${host}/api`;
 };
