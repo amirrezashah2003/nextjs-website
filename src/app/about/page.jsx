@@ -1,115 +1,37 @@
-"use client";
-
-import React, { useState } from "react";
-import Image from "next/image";
+import React from "react";
+import AboutGallery from "@/components/AboutGallery/AboutGallery";
 import { 
   FaCode, FaServer, FaDatabase, FaShieldAlt, FaBolt, 
   FaLaptopCode, FaCheckCircle, FaLayerGroup, FaRocket, 
-  FaShoppingCart, FaUserShield  , FaTools , FaLightbulb , FaBook 
+  FaShoppingCart, FaUserShield, FaLightbulb 
 } from "react-icons/fa";
 
 export default function AboutPage() {
-  const images = [
-    "/images/profile1.jpeg", 
-    "/images/profile2.jpeg",
-    "/images/profile3.jpeg", 
-    "/images/profile4.jpeg"
-  ];
-
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const nextImage = () => {
-    setActiveIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
   return (
     <div className="min-h-screen bg-bg-tertiary text-gray-900 in-[.dark]:text-gray-100 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-16">
 
         {/* ================= بخش اول: گالری چرخنده تصاویر و معرفی کوتاه ================= */}
         <section className="text-center space-y-8">
-            <div className="relative w-full max-w-xl mx-auto h-80 sm:h-96 flex items-center justify-center overflow-hidden">
-                
-                {/* کنترلر قبلی */}
-                <button
-                onClick={prevImage}
-                className="absolute left-2 sm:left-6 bg-white/80 in-[.dark]:bg-gray-800/80 hover:bg-white in-[.dark]:hover:bg-gray-700 p-3 rounded-full shadow-md transition z-30 text-lg font-bold"
-                aria-label="Previous Image"
-                >
-                  ❯
-                </button>
+            
+            {/* فراخوانی کامپوننت کلاینتِ گالری */}
+            <AboutGallery />
 
-                {/* گالری چرخشی دایره‌ای داینامیک برای ۴ تصویر */}
-                <div className="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center">
-                {images.map((src, idx) => {
-                    const isActive = idx === activeIndex;
-                    const offset = (idx - activeIndex + images.length) % images.length;
-                    
-                    let transformStyle = "scale-75 opacity-30 translate-x-32 z-0 pointer-events-none";
-                    
-                    if (isActive) {
-                    transformStyle = "scale-100 opacity-100 translate-x-0 z-20 shadow-2xl ring-4 ring-primary/50 pointer-events-auto";
-                    } else if (offset === 1) {
-                    // تصویر بعدی (سمت راست)
-                    transformStyle = "scale-85 opacity-60 translate-x-20 sm:translate-x-28 z-10 cursor-pointer";
-                    } else if (offset === images.length - 1) {
-                    // تصویر قبلی (سمت چپ)
-                    transformStyle = "scale-85 opacity-60 -translate-x-20 sm:-translate-x-28 z-10 cursor-pointer";
-                    } else {
-                    // تصویر چهارم (کاملاً در پس‌زمینه)
-                    transformStyle = "scale-60 opacity-0 translate-x-0 z-0 pointer-events-none";
-                    }
-
-                    return (
-                    <div
-                        key={idx}
-                        className={`absolute inset-0 transition-all duration-500 ease-in-out rounded-full overflow-hidden bg-gray-200 in-[.dark]:bg-gray-800 cursor-pointer ${transformStyle}`}
-                        onClick={() => setActiveIndex(idx)}
-                    >
-                        <div className="relative w-full h-full flex items-center justify-center text-xs text-gray-500 in-[.dark]:text-gray-400">
-                        <Image
-                            src={src}
-                            alt={`Amir Profile ${idx + 1}`}
-                            fill
-                            className="object-cover"
-                            onError={(e) => {
-                            e.target.style.display = 'none';
-                            }}
-                        />
-                        
-                        </div>
-                    </div>
-                    );
-                })}
-                </div>
-
-                {/* کنترلر بعدی */}
-                <button
-                onClick={nextImage}
-                className="absolute right-2 sm:right-6 bg-white/80 in-[.dark]:bg-gray-800/80 hover:bg-white in-[.dark]:hover:bg-gray-700 p-3 rounded-full shadow-md transition z-30 text-lg font-bold"
-                aria-label="Next Image"
-                >
-                   ❮
-                </button>
+            {/* ================= عنوان و مقدمه ================= */}
+            <div className="text-center space-y-4">
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                  معماری و روایت فنی <span className="text-primary">پروژه</span>
+                </h2>
+                <p className="max-w-3xl mx-auto text-base sm:text-lg text-gray-600 in-[.dark]:text-gray-300 leading-relaxed">
+                  سلام، من <span className="font-semibold text-primary">امیررضا</span> هستم؛ توسعه‌دهنده فرانت‌اند و سازنده سامانه‌های وب مقیاس‌پذیر. تمرکز من فقط بر اجرای طرح‌ها نیست؛ روی مهندسی یک محصول کامل است: مسیر کاربر، ساختار داده، سرعت نمایش، امنیت مسیرهای حساس و تجربه‌ای که در موبایل و دسکتاپ یکسان و روان بماند.
+                </p>
+                <p className="max-w-3xl mx-auto text-sm sm:text-base text-gray-500 in-[.dark]:text-gray-400 leading-relaxed">
+                  در پروژه‌ای که این سند بر اساس آن نوشته شده، یک فروشگاه اینترنتی واقعی را از صفر ساخته‌ام — از معماری پایه و سیستم طراحی گرفته تا لایه داده، احراز هویت، سبد خرید ترکیبی مهمان/کاربر و پنل مدیریت. این صفحه را طوری تنظیم کرده‌ام که هر کارفرما یا تک‌لیدری بتواند در چند دقیقه تصویر دقیقی از توانایی فنی و نحوه نگرش من به کیفیت پیدا کند.
+                </p>
+                <p className="max-w-3xl mx-auto text-sm sm:text-base text-gray-500 in-[.dark]:text-gray-400 leading-relaxed">
+                  برای مشاهده دقیق تر ساختار پروژه و تکنولوژی های استفاده شده وارد <a className="inline-flex justify-center text-primary! font-bold underline! underline-offset-8! mx-1" href="https://github.com/amirrezashah2003/nextjs-website"> گیت هاب </a> من شوید.
+                </p>
             </div>
-
-                  {/* ================= عنوان و مقدمه ================= */}
-                <div className="text-center space-y-4">
-                    <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                    معماری و روایت فنی <span className="text-primary">پروژه</span>
-                    </h2>
-                    <p className="max-w-3xl mx-auto text-base sm:text-lg text-gray-600 in-[.dark]:text-gray-300 leading-relaxed">
-                    سلام، من <span className="font-semibold text-primary">امیررضا</span> هستم؛ توسعه‌دهنده فرانت‌اند و سازنده سامانه‌های وب مقیاس‌پذیر. تمرکز من فقط بر اجرای طرح‌ها نیست؛ روی مهندسی یک محصول کامل است: مسیر کاربر، ساختار داده، سرعت نمایش، امنیت مسیرهای حساس و تجربه‌ای که در موبایل و دسکتاپ یکسان و روان بماند.
-                    </p>
-                    <p className="max-w-3xl mx-auto text-sm sm:text-base text-gray-500 in-[.dark]:text-gray-400 leading-relaxed">
-                    در پروژه‌ای که این سند بر اساس آن نوشته شده، یک فروشگاه اینترنتی واقعی را از صفر ساخته‌ام — از معماری پایه و سیستم طراحی گرفته تا لایه داده، احراز هویت، سبد خرید ترکیبی مهمان/کاربر و پنل مدیریت. این صفحه را طوری تنظیم کرده‌ام که هر کارفرما یا تک‌لیدری بتواند در چند دقیقه تصویر دقیقی از توانایی فنی و نحوه نگرش من به کیفیت پیدا کند.
-                    </p>
-                    <p className="max-w-3xl mx-auto text-sm sm:text-base text-gray-500 in-[.dark]:text-gray-400 leading-relaxed">برای مشاهده دقیق تر ساختار پروژه و تکنولوژی های استفاده شده وارد <a className="inline-flex justify-center text-primary! font-bold underline! underline-offset-8! mx-1" href="https://github.com/amirrezashah2003/nextjs-website"> گیت هاب </a> من شوید.</p>
-                </div>
         </section>
 
         {/* ================= بخش دوم: مهارت‌های تخصصی ================= */}
@@ -204,143 +126,91 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* ================= بخش پایانی: قابلیت‌ها و چرا من ================= */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-16 text-gray-900 in-[.dark]:text-gray-100">
+          
+          {/* قابلیت‌های کلیدی محصول */}
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold flex items-center gap-2 border-b pb-3 border-gray-200 in-[.dark]:border-gray-800">
+              <FaShoppingCart className="text-primary" /> قابلیت‌های کلیدی محصول
+            </h3>
 
-        
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
+                <FaUserShield className="text-2xl text-primary" />
+                <h4 className="font-bold">احراز هویت امن با OTP</h4>
+                <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">ورود با رمز یک‌بارمصرف، مدیریت نشست با توکن JWT و کوکی‌های httpOnly و خروج ایمن در سمت سرور.</p>
+              </div>
 
+              <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
+                <FaShieldAlt className="text-2xl text-primary" />
+                <h4 className="font-bold">Middleware سازگار با Edge</h4>
+                <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">محافظت از مسیرهای حساس با کتابخانه jose برای اعتبارسنجی JWT و تشخیص نقش ادمین در نقطه ورود درخواست‌ها.</p>
+              </div>
 
+              <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
+                <FaShoppingCart className="text-2xl text-primary" />
+                <h4 className="font-bold">سبد خرید ترکیبی</h4>
+                <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">نگهداری سبد مهمان در localStorage و ادغام خودکار آن با دیتابیس پس از ورود با تراکنش‌های امن Prisma.</p>
+              </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-16 text-gray-900 in-[.dark]:text-gray-100">
-      
-
-
-  
-      {/* ================= قابلیت‌های کلیدی محصول ================= */}
-      <div className="space-y-6">
-        <h3 className="text-2xl font-bold flex items-center gap-2 border-b pb-3 border-gray-200 in-[.dark]:border-gray-800">
-          <FaShoppingCart className="text-primary" /> قابلیت‌های کلیدی محصول
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
-            <FaUserShield className="text-2xl text-primary" />
-            <h4 className="font-bold">احراز هویت امن با OTP</h4>
-            <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">ورود با رمز یک‌بارمصرف، مدیریت نشست با توکن JWT و کوکی‌های httpOnly و خروج ایمن در سمت سرور.</p>
-          </div>
-
-          <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
-            <FaShieldAlt className="text-2xl text-primary" />
-            <h4 className="font-bold">Middleware سازگار با Edge</h4>
-            <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">محافظت از مسیرهای حساس با کتابخانه jose برای اعتبارسنجی JWT و تشخیص نقش ادمین در نقطه ورود درخواست‌ها.</p>
-          </div>
-
-          <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
-            <FaShoppingCart className="text-2xl text-primary" />
-            <h4 className="font-bold">سبد خرید ترکیبی</h4>
-            <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">نگهداری سبد مهمان در localStorage و ادغام خودکار آن با دیتابیس پس از ورود با تراکنش‌های امن Prisma.</p>
-          </div>
-
-          <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
-            <FaLaptopCode className="text-2xl text-primary" />
-            <h4 className="font-bold">پنل مدیریت اختصاصی</h4>
-            <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">مدیریت محصولات و کاربران با تفکیک نقش‌ها، تب‌های پویا و اتصال مستقیم به APIهای اختصاصی.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= چرا من؟ ================= */}
-      <div className="space-y-6 bg-white in-[.dark]:bg-gray-800/80 p-6 sm:p-8 rounded-3xl border border-gray-200 in-[.dark]:border-gray-700 shadow-sm">
-        <h3 className="text-2xl font-bold flex items-center gap-2">
-          <FaLightbulb className="text-primary" /> چرا من؟
-        </h3>
-        <p className="text-sm sm:text-base text-gray-600 in-[.dark]:text-gray-300">
-          اگر به‌دنبال کسی هستید که فقط صفحات زیبا نسازد، بلکه مسئول معماری، کیفیت و رفتار واقعی محصول باشد، این پروژه نشان می‌دهد که چگونه کار می‌کنم:
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3">
-            <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
-            <div>
-              <h4 className="font-semibold text-sm">نگرش محصولی</h4>
-              <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">از نیاز کاربر شروع می‌کنم، نه از کتابخانه.</p>
+              <div className="bg-white in-[.dark]:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 in-[.dark]:border-gray-700 space-y-2">
+                <FaLaptopCode className="text-2xl text-primary" />
+                <h4 className="font-bold">پنل مدیریت اختصاصی</h4>
+                <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">مدیریت محصولات و کاربران با تفکیک نقش‌ها، تب‌های پویا و اتصال مستقیم به APIهای اختصاصی.</p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
-            <div>
-              <h4 className="font-semibold text-sm">تصمیم‌های فنی دلیل‌دار</h4>
-              <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">هر انتخاب بر اساس نیاز واقعی و قابل توضیح بوده است، نه مد روز بودن.</p>
+          {/* چرا من؟ */}
+          <div className="space-y-6 bg-white in-[.dark]:bg-gray-800/80 p-6 sm:p-8 rounded-3xl border border-gray-200 in-[.dark]:border-gray-700 shadow-sm">
+            <h3 className="text-2xl font-bold flex items-center gap-2">
+              <FaLightbulb className="text-primary" /> چرا من؟
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 in-[.dark]:text-gray-300">
+              اگر به‌دنبال کسی هستید که فقط صفحات زیبا نسازد، بلکه مسئول معماری، کیفیت و رفتار واقعی محصول باشد، این پروژه نشان می‌دهد که چگونه کار می‌کنم:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3">
+                <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-sm">نگرش محصولی</h4>
+                  <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">از نیاز کاربر شروع می‌کنم، نه از کتابخانه.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-sm">تصمیم‌های فنی دلیل‌دار</h4>
+                  <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">هر انتخاب بر اساس نیاز واقعی و قابل توضیح بوده است، نه مد روز بودن.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-sm">توجه به جزئیات بی‌صدا</h4>
+                  <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">مدیریت خطا، هماهنگی داده، امنیت مسیرها و ناسازگاری هیدریشن.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-sm">کد قابل تحویل به تیم</h4>
+                  <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">ساختاری تمیز، هوک‌های قابل استفاده مجدد و الگوهای یکدست.</p>
+                </div>
+              </div>
             </div>
+
+            <p className="text-sm text-gray-600 in-[.dark]:text-gray-300 pt-2 border-t border-gray-200 in-[.dark]:border-gray-700">
+              این پروژه نشان می‌دهد که می‌توانم از ایده تا محصول کامل را مستقل ببرم و در تیم نیز با همین نگرش کیفیت‌محور contribution مؤثر داشته باشم. آماده‌ام در یک مصاحبه کوتاه یا بررسی کد، جزئیات فنی هر بخش را دقیق توضیح دهم.
+            </p>
           </div>
 
-          <div className="flex items-start gap-3">
-            <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
-            <div>
-              <h4 className="font-semibold text-sm">توجه به جزئیات بی‌صدا</h4>
-              <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">مدیریت خطا، هماهنگی داده، امنیت مسیرها و ناسازگاری هیدریشن.</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <FaCheckCircle className="text-green-500 mt-1 shrink-0" />
-            <div>
-              <h4 className="font-semibold text-sm">کد قابل تحویل به تیم</h4>
-              <p className="text-xs text-gray-600 in-[.dark]:text-gray-400">ساختاری تمیز، هوک‌های قابل استفاده مجدد و الگوهای یکدست.</p>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 in-[.dark]:text-gray-300 pt-2 border-t border-gray-200 in-[.dark]:border-gray-700">
-          این پروژه نشان می‌دهد که می‌توانم از ایده تا محصول کامل را مستقل ببرم و در تیم نیز با همین نگرش کیفیت‌محور contribution مؤثر داشته باشم. آماده‌ام در یک مصاحبه کوتاه یا بررسی کد، جزئیات فنی هر بخش را دقیق توضیح دهم.
-        </p>
-      </div>
-
-
-
-    </section>
+        </section>
 
       </div>
     </div>

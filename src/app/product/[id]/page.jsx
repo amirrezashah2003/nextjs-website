@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import Image from "next/image"
-import { useParams } from "next/navigation"
+import { useParams , notFound } from "next/navigation"
 import { useProductsById } from "@/components/hooks/useProducts"
 import { useAddToCart } from "@/components/hooks/useCart"
 import { toast, Toaster } from "react-hot-toast" 
@@ -11,6 +11,18 @@ import { useUser } from "@/components/hooks/useUser";
 function ProductPage(){
     const params = useParams()
     const productId = params.id
+    // اعتبارسنجی اینکه آیا آیدی عددی بین ۱ تا ۱۰۰ است یا خیر
+    const numericId = Number(productId);
+    const isValidId = !isNaN(numericId) && numericId >= 1 && numericId <= 100;
+
+    // اگر آیدی نامعتبر بود، بلافاصله ارور 404 لود می‌شود
+    if (!isValidId) {
+        notFound();
+    }
+
+
+
+    
     const { data , isLoading , isError } = useProductsById(productId)
     const rawData = typeof data === "string" ? JSON.parse(data) : data;
     const product = rawData?.products ? rawData.products[0] : (Array.isArray(rawData) ? rawData[0] : rawData);

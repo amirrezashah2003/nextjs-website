@@ -1,5 +1,6 @@
 "use client"
 import { useParams, useSearchParams } from "next/navigation"
+import { notFound } from "next/navigation" 
 import { useProductsByCategoryAndBrandAndModel } from "@/components/hooks/useProducts"
 import ProductCard from "@/components/ProductCard/ProductCard"
 import Pagination from "@/components/pagination/pagination"
@@ -39,6 +40,20 @@ const modelMap = {
     poco: "پوکو",
     redmi: "ردمی"
 }
+const ALLOWED_MODELS = ['rog', 'tuf', 'zenbook', 'legion', 'loq' , 'ideapad' , 'macbookpro' , 'macbookair' , 'iphone17' , 'iphone16' , 'a56' , 'a36' , 'poco' , 'redmi'];
+const ALLOWED_BRANDS = ['asus', 'lenovo', 'apple', 'hp', 'msi' , 'samsung' , 'xiaomi' , 'sony' , 'microsoft'];
+const ALLOWED_CATEGORIES = ['laptop', 'mobile', 'tablet', 'console'];
+
+
+
+
+
+
+
+
+
+
+
 
 export default function ProductBrand(){
     const params = useParams()
@@ -48,12 +63,21 @@ export default function ProductBrand(){
     const page = Number(searchParams.get("page")) || 1
 
     const model = params.productModel
-    const modelName = modelMap[model]
     const brand = params.productBrand
-    const brandName = brandMap[brand]
     const category = params.productName
-    const categoryName = categoryMap[category]
+    if (
+        (category && !ALLOWED_CATEGORIES.includes(category)) || 
+        (brand && !ALLOWED_BRANDS.includes(brand)) ||
+        (model && !ALLOWED_MODELS.includes(model))
+    ) {
+        notFound();
+    }
     
+    
+    
+    const modelName = modelMap[model] || ""
+    const brandName = brandMap[brand] || ""
+    const categoryName = categoryMap[category] || "محصولات"
     // ارسال صفحه به هوک
     const { data, isLoading, isError } = useProductsByCategoryAndBrandAndModel(category, brand, model, page)
     
@@ -74,8 +98,8 @@ export default function ProductBrand(){
     return(
         <main className="container mx-auto px-4 py-8">  
             <h1 className="text-2xl font-bold mb-8 text-gray-800 in-[.dark]:text-gray-200">محصولات فروشگاه</h1>
-            <h2 className="mb-6 text-center text-lg font-medium text-gray-600 in-[.dark]:text-gray-400">
-                لیست {categoryName} {brandName} {modelName}
+            <h2 className="mb-6 text-lg font-medium text-gray-600 in-[.dark]:text-gray-400">
+                لیست {categoryName}ی {brandName} {modelName}
             </h2>
     
             {products.length === 0 ? (

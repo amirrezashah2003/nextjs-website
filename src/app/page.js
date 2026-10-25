@@ -20,6 +20,16 @@ async function CarouselsSection() {
   );
 }
 
+
+// استفاده از generateMetadata برای سئو و بهینه‌سازی موتورهای جستجو
+export const metadata = {
+  title: "فروشگاه تکنولوژی | خرید آنلاین لپ‌تاپ و موبایل",
+  description: "بهترین قیمت‌ها برای خرید انواع محصولات دیجیتال در فروشگاه ما.",
+  keywords: ["خرید لپ تاپ", "موبایل", "کنسول بازی", "فروشگاه آنلاین"],
+};
+
+
+
 export default function Home() {
   return (
     <main className="container px-4 py-8">
@@ -30,6 +40,10 @@ export default function Home() {
           </div>
         }
       >
+        <h1 className="text-3xl font-bold mb-6 text-center">به فروشگاه امیررضا خوش آمدید!</h1>
+        <p className="text-center mb-12 text-gray-600 in-[.dark]:text-gray-400">
+          بهترین مکان برای خرید آنلاین لپ‌تاپ، موبایل، تبلت و کنسول‌های بازی.
+        </p>
         <CarouselsSection />
       </Suspense>
     </main>
