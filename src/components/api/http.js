@@ -1,15 +1,18 @@
 import axios from "axios";
 
-// تعیین آدرس پایه برای سرور و کلاینت
 const getBaseURL = () => {
   if (typeof window !== "undefined") {
-    // اگر در کلاینت (مرورگر) هستیم، آدرس نسبی کافی است
+    // در کلاینت (مرورگر): از مسیر نسبی استفاده می‌کنیم تا با هر دامنه ای کار کند
     return "/api";
   }
-  // اگر در سرور هستیم، باید آدرس کامل (شامل پروتکل و پورت) باشد
-  const protocol = "http";
-  const host = process.env.VERCEL_URL || "localhost:3000";
-  return `${protocol}://${host}/api`;
+
+  // در سرور (SSR): نیاز به آدرس کامل داریم
+  // اگر SERVER_URL در .env تعریف شده باشد از آن استفاده می‌کند، در غیر این صورت localhost
+  const baseUrl = process.env.SERVER_URL || "http://localhost:3000";
+  
+  // مدیریت نکردن اسلش‌های اضافه یا کم
+  const cleanBaseUrl = baseUrl.replace(/\/$/, ""); 
+  return `${cleanBaseUrl}/api`;
 };
 
 const http = axios.create({
