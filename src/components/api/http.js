@@ -8,7 +8,7 @@ const getBaseURL = () => {
 
   // در سرور (SSR): نیاز به آدرس کامل داریم
   // اگر SERVER_URL در .env تعریف شده باشد از آن استفاده می‌کند، در غیر این صورت localhost
-  const baseUrl = process.env.SERVER_URL || "http://localhost:3000";
+  const baseUrl = process.env.SERVER_URL || "https://amirreza2003.ir";
   
   // مدیریت نکردن اسلش‌های اضافه یا کم
   const cleanBaseUrl = baseUrl.replace(/\/$/, ""); 

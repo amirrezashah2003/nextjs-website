@@ -86,10 +86,10 @@ function HeaderUp({ userPhone, userId }) {
             <ThemeToggle />
 
             {/* بخش کاربر */}
-            <div>
+            <div className="ms-1">
               {userPhone ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-primary! border border-primary! rounded-lg px-2.5 py-1.5 inline-block">
+                  <span className="inline-flex h-7 md:h-8 items-center text-xs font-medium text-primary! border border-primary! rounded-md px-2 py-1 pt-2">
                     {userPhone}
                   </span>
                   <button
@@ -97,7 +97,7 @@ function HeaderUp({ userPhone, userId }) {
                       await fetch("/api/auth/logout", { method: "POST" });
                       window.location.reload();
                     }}
-                    className="border border-red-200 in-[.dark]:border-red-900/50 text-red-600 in-[.dark]:text-red-400 hover:bg-red-50 in-[.dark]:hover:bg-red-950/30 rounded-lg px-3 py-1.5 transition-colors text-xs font-medium"
+                    className="border border-red-200 in-[.dark]:border-red-900/50 text-red-600 in-[.dark]:text-red-400 hover:bg-red-50 in-[.dark]:hover:bg-red-950/30 rounded-lg px-3 py-1 inline-flex h-8 md:h-9 items-center transition-colors text-xs font-medium"
                   >
                     خروج
                   </button>
@@ -105,7 +105,7 @@ function HeaderUp({ userPhone, userId }) {
               ) : (
                 <Link
                   href={`/auth?callback=${encodeURIComponent(pathname)}`}
-                  className="border border-primary text-primary hover:bg-primary hover:text-white! rounded-lg px-3 py-1.5 transition-colors text-xs font-medium"
+                  className="border border-primary text-primary hover:bg-primary hover:text-white! rounded-lg px-3 py-1 transition-colors text-xs font-medium inline-flex h-8 md:h-9 items-center"
                 >
                   ورود | ثبت‌نام
                 </Link>
@@ -115,9 +115,9 @@ function HeaderUp({ userPhone, userId }) {
             {/* سبد خرید */}
             <Link
               href="/cart"
-              className="flex items-center gap-1 bg-primary hover:bg-primary-hover text-gray-100! rounded-lg px-3.5 py-1.5 transition-all shadow-sm active:scale-[0.98] relative"
+              className="inline-flex h-8 md:h-9  items-center gap-1 bg-primary hover:bg-primary-hover text-gray-100! rounded-lg px-3.5 py-1.5 transition-all shadow-sm active:scale-[0.98] relative"
             >
-              <FaBasketShopping className="h-4 w-4 md:h-5 md:w-5" />
+              <FaBasketShopping className="h-4 w-4 md:w-5 md:h-5" />
               <span className="hidden sm:inline font-medium">سبد خرید</span>
 
               {totalItems > 0 && (
