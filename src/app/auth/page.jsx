@@ -134,11 +134,11 @@ function AuthContent() {
           /* فرم مرحله ۲: کد OTP */
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div>
-              <label className="block text-sm mb-1 text-neutral-700 in-[.dark]:text-neutral-300">کد ۴ رقمی</label>
+              <label className="block text-sm mb-1 text-neutral-700 in-[.dark]:text-neutral-300">کد 5 رقمی</label>
               <input
                 type="text"
-                maxLength="4"
-                placeholder="****"
+                maxLength="5"
+                placeholder="*****"
                 className="w-full rounded-xl border border-neutral-300 p-3 text-center text-2xl tracking-[1em] outline-none focus:ring-1 focus:ring-primary in-[.dark]:border-neutral-700 in-[.dark]:bg-neutral-800 in-[.dark]:text-white"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}

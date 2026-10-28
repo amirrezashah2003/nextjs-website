@@ -3,47 +3,62 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { phone } = body;
+    const { phone } = await request.json();
 
-    if (!phone || typeof phone !== 'string' || phone.length < 10) {
+    if (!phone || typeof phone !== 'string' || !/^09\d{9}$/.test(phone)) {
       return NextResponse.json(
         { error: 'شماره موبایل معتبر نیست.' },
         { status: 400 }
       );
     }
 
-    // تولید کد تصادفی ۴ رقمی
-    const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
-    
-    // تاریخ انقضا: ۲ دقیقه بعد
-    const expiresAt = new Date(Date.now() + 2 * 60 * 1000);
+    const apiUrl = process.env.MELIPAYAMAK_OTP_URL || "xxxx"
 
-    // ذخیره یا آپدیت کد در دیتابیس
-    await prisma.otp.upsert({
-      where: { phone },
-      update: {
-        code: otpCode,
-        expiresAt,
+    if (!apiUrl) {
+      console.error('MELIPAYAMAK_OTP_URL is not configured in environment variables.');
+      return NextResponse.json(
+        { error: 'سرویس ارسال پیامک تنظیم نشده است.' },
+        { status: 500 }
+      );
+    }
+
+    // ارسال درخواست به وب‌سرویس اختصاصی OTP ملی‌پیامک
+    const smsResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      create: {
-        phone,
-        code: otpCode,
-        expiresAt,
-      },
+      body: JSON.stringify({ to: phone }),
+      cache: 'no-store',
     });
 
-    // چاپ کد در کنسول برای تست در محیط توسعه
-    console.log(`========================================`);
-    console.log(`[OTP SERVICE] Code for ${phone}: ${otpCode}`);
-    console.log(`========================================`);
+    const result = await smsResponse.json().catch(() => null);
+
+
+    if (!smsResponse.ok || !result?.code) {
+      console.error('Melipayamak OTP error response:', result);
+      return NextResponse.json(
+        { error: 'ارسال پیامک با خطا مواجه شد. لطفاً دوباره تلاش کنید.' },
+        { status: 502 }
+      );
+    }
+
+    const otpCode = String(result.code);
+    const expiresAt = new Date(Date.now() + 2 * 60 * 1000); // انقضا تا ۲ دقیقه
+
+    // ذخیره یا آپدیت کد تولید شده توسط پنل در دیتابیس
+    await prisma.otp.upsert({
+      where: { phone },
+      update: { code: otpCode, expiresAt },
+      create: { phone, code: otpCode, expiresAt },
+    });
 
     return NextResponse.json(
       { message: 'کد تایید با موفقیت ارسال شد.' },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error sending OTP:', error);
+    console.error('Error in send-otp route:', error);
     return NextResponse.json(
       { error: 'خطایی در سرور رخ داده است.' },
       { status: 500 }
